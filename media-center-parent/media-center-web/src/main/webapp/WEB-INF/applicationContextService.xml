@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+	<bean name="baseService" abstract="true">
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplate" />
+	</bean>
+	<bean name="userService" class="com.yunling.mediacenter.db.service.impl.UserServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="authorityService" class="com.yunling.mediacenter.db.service.impl.AuthorityServiceImpl" parent="baseService">
+	</bean>
+	<bean name="stbService" class="com.yunling.mediacenter.db.service.impl.StbServiceImpl" parent="baseService">
+	</bean>
+	<bean name="provService" class="com.yunling.mediacenter.db.service.impl.ProvinceServiceImpl" parent="baseService">
+	</bean>
+	<bean name="cityService" class="com.yunling.mediacenter.db.service.impl.CityServiceImpl" parent="baseService">
+	</bean>
+	<bean name="districtService" class="com.yunling.mediacenter.db.service.impl.DistrictServiceImpl" parent="baseService">
+	</bean>
+	<bean name="roleService" class="com.yunling.mediacenter.db.service.impl.RoleServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="userRoleService" class="com.yunling.mediacenter.db.service.impl.UserRoleServiceImpl" parent="baseService">
+	</bean>
+	<bean name="roleFunctionService" class="com.yunling.mediacenter.db.service.impl.RoleFunctionServiceImpl" parent="baseService">
+	</bean>
+	<bean name="groupTypeService" class="com.yunling.mediacenter.db.service.impl.GroupTypeServiceImpl" parent="baseService">
+	</bean>
+	<bean name="groupsService" class="com.yunling.mediacenter.db.service.impl.GroupsServiceImpl" parent="baseService">
+	</bean>
+	<bean name="customerService" class="com.yunling.mediacenter.db.service.impl.CustomerServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="localService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl">
+			<jee:jndi-lookup jndi-name="hessianSerivceUrl" />
+		</property>
+		<property name="serviceInterface">
+			<value>com.yunling.mediacenter.server.remote.WebControl</value>
+		</property>
+	</bean>
+	<bean name="policyService" class="com.yunling.mediacenter.db.service.impl.PolicyServiceImpl" parent="baseService">
+	</bean>
+	<bean name="videoService" class="com.yunling.mediacenter.db.service.impl.VideoServiceImpl" parent="baseService">
+	</bean>
+	<bean name="videosService" class="com.yunling.mediacenter.db.service.impl.VideosServiceImpl" parent="baseService">
+	</bean>
+	<bean id="authentiCation"
+		class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl">
+			<jee:jndi-lookup jndi-name="authSerivceUrl" />
+		</property>
+		<property name="serviceInterface">
+			<value>com.yunling.mediacenter.server.remote.AuthenticateQuery</value>
+		</property>
+	</bean>
+	<bean name="confService" class="com.yunling.mediacenter.db.service.impl.ConfServiceImpl" parent="baseService">
+	</bean>
+	<bean name="configService" class="com.yunling.mediacenter.db.service.impl.ConfigServiceImpl" parent="baseService">
+	</bean>
+	<bean name="loginlogservice" class="com.yunling.mediacenter.db.service.impl.LoginLogServiceImpl" parent="baseService">
+	</bean>
+	<bean name="operationLogService" class="com.yunling.mediacenter.db.service.impl.OperationLogServiceImpl" parent="baseService">
+	</bean>
+	<bean name="stbOperaLogService" class="com.yunling.mediacenter.db.service.impl.StbOperationLogServiceImpl" parent="baseService">
+		<property name="pageSize" value="${pageSize}"></property>
+	</bean>
+	<bean name="configdownloadlogservice" class="com.yunling.mediacenter.db.service.impl.ConfigDownLoadLogServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="stbLoginRecordService" class="com.yunling.mediacenter.db.service.impl.StbLoginRecordServiceImpl" parent="baseService">
+		<property name="pageSize" value="${pageSize}"></property>
+	</bean>
+	<bean name="authenticateRecordService" class="com.yunling.mediacenter.db.service.impl.AuthenticateRecordServiceImpl" parent="baseService">
+		<property name="pageSize" value="${pageSize}"></property>
+	</bean>
+	<bean name="watcherReportRecordService" class="com.yunling.mediacenter.db.service.impl.WatcherReportRecordServiceImpl" parent="baseService">
+		<property name="pageSize" value="${pageSize}"></property>
+	</bean>
+	<bean name="webControlRecordService" class="com.yunling.mediacenter.db.service.impl.WebControlRecordServiceImpl" parent="baseService">
+		<property name="pageSize" value="${pageSize}"></property>
+	</bean>
+	<bean name="boxPackageService" class="com.yunling.mediacenter.db.service.impl.BoxPackageServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="packageFilesService" class="com.yunling.mediacenter.db.service.impl.PackageFilesServiceImpl" parent="baseService">
+	</bean>
+	<bean name="moduleFileService" class="com.yunling.mediacenter.db.service.impl.ModuleFileServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="downStatusService" class="com.yunling.mediacenter.db.service.impl.BoxDownStatusServiceImpl" parent="baseService">
+	</bean>
+	<bean name="perflogservice" class="com.yunling.mediacenter.db.service.impl.BoxPerfLogServiceImpl" parent="baseService">
+		<property name="size" value="${pageSize}"></property>
+	</bean>
+	<bean name="playlogservice" class="com.yunling.mediacenter.db.service.impl.BoxPlayLogServiceImpl" parent="baseService">
+	</bean>
+	<bean name="stbWarningInfoService" class="com.yunling.mediacenter.db.service.impl.StbWarningInfoServiceImpl" parent="baseService"/>
+	<bean name="policyMediaService" class="com.yunling.mediacenter.db.service.impl.PolicyMediaServiceImpl" parent="baseService" />
+	<bean name="packagesService" class="com.yunling.mediacenter.db.service.impl.PackagesServiceImpl" parent="baseService" />
+	<bean name="publishRecordService" class="com.yunling.mediacenter.db.service.impl.PublishRecordServiceImpl" parent="baseService" />
+</beans>

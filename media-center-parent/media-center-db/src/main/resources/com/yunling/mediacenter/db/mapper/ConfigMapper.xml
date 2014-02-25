@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.ConfigMapper">
+	<select id="getProperties" resultType="String">
+		select 
+			config_key as configKey
+		from CONFIG
+		where 
+			conf_id = -1
+	</select>
+	<!--<select id="getProperties" resultType="String">
+		select 
+			distinct config_key as configKey
+		from CONFIG
+	</select>-->
+	<select id="getConfigs" resultType="Config">
+		select 
+			config_id as configId,
+			conf_id as confId,
+			config_key as configKey,
+			config_value as configValue
+		from CONFIG
+		where 1=1
+		<if test="confId != 0">
+			and conf_id = ${confId }
+		</if>
+		<if test="configKey != null and configKey != ''" >
+			and config_key = #{configKey }
+		</if>
+	</select>
+	<insert id="addConfig" parameterType="Config">
+		<selectKey keyProperty="configId" order="BEFORE" resultType="java.lang.Long">
+			select CONFIG_SEQ.nextval from dual
+		</selectKey>
+		insert into CONFIG(config_id, conf_id, config_key, config_value)
+		values(#{configId }, #{confId }, #{configKey }, #{configValue })
+	</insert>
+	<update id="editConfig"  parameterType="Config">
+		update CONFIG set config_value=#{configValue} 
+		where config_id=#{configId}
+	</update>
+	<delete id="deleteConfigs"  parameterType="Config">
+		delete from CONFIG 
+		where conf_id=#{confId}
+	</delete>
+</mapper>

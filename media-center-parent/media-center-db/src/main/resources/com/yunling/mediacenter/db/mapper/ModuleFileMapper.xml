@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.ModuleFileMapper">
+	<select id="selectModuleCount" resultType="java.lang.Integer">
+		select count(*) from modulefile
+	</select>
+	<select id="list" resultType="ModuleFile" parameterType="map">
+		select * from (select row_number()over(order by id desc) r,u.* from modulefile u where 1=1
+		<if test="module !=null and module !='' ">
+				and module=#{module}
+		</if>
+		<if test="version !=null and version !=''">
+				and version=#{version}
+		</if>
+		<if test="beginTime !=null and beginTime !=''">
+				and  releasetime &gt;= #{beginTime}
+		</if>
+		<if test="endTime !=null and endTime !=''">
+				and releasetime &lt;= #{endTime}
+		</if>
+		) where r between #{begin} and #{end} 
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+			delete from modulefile where id = #{id}
+	</delete>
+	<select id="getModuleFiles" resultType="ModuleFile">
+		select * from (
+			select ID, FILEPATH, VERSION, FILE_COMMENT, RELEASETIME, VERFLYCODE, MODULE, 
+				ROWNUM AS R 
+			from MODULEFILE
+			where 1=1
+			order by RELEASETIME desc
+		) 
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<insert id="addModuleFile" parameterType="ModuleFile">
+		insert into MODULEFILE (ID, FILEPATH, VERSION, FILE_COMMENT, RELEASETIME, VERFLYCODE, MODULE)
+		values(MODULE_ID.nextVal, #{filePath}, #{version}, #{file_comment}, 
+			sysdate, #{verflyCode}, #{module})
+	</insert>
+	<update id="update" parameterType="ModuleFile" >
+		update MODULEFILE set 
+			MODULE = #{module},
+			VERSION = #{version}, 
+			FILE_COMMENT = #{file_comment}, 
+			FILEPATH = #{filePath}, 
+			VERFLYCODE = #{verflyCode}
+		where id = #{id}
+	</update>	
+	<select id="selectModuleByBoxId" parameterType="java.lang.Long" resultType="ModuleFile">
+		select m.* from modulefile m join packagefiles p on p.fileid=m.id where p.packageid=#{id}		
+	</select>
+</mapper>	

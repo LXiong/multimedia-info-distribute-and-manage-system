@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.OperationLogMapper">
+	<insert id="addOperationLog" parameterType="OperationLog">
+		insert into operationlog
+			(operationtime,currentuserid,action,updateobject,objectid,issuccess)
+		values(#{operationtime},#{currentuserId},#{action},#{updateobject},
+			#{objectid},#{issuccess})
+	</insert>
+	
+	<sql id="condition">
+		<where>
+			<!-- <choose>
+				<when test="beginTime != null and endTime != null">
+					AND 
+					to_char(operationtime,'yyyymmdd') BETWEEN to_char(#{beginTime,jdbcType=DATE},'yyyymmdd') and
+					to_char(#{endTime,jdbcType=DATE},'yyyymmdd')
+				</when>
+				<when test="beginTime != null">
+					AND to_char(operationtime,'yyyymmdd') &gt;= to_char(#{beginTime,jdbcType=DATE},'yyyymmdd')
+				</when>
+				<when test="endTime != null">
+					AND to_char(operationtime,'yyyymmdd') &lt;= to_char(#{endTime,jdbcType=DATE},'yyyymmdd')
+				</when>
+			</choose> -->
+			<if test="beginTime != null and beginTime != ''">
+				AND to_char(operationtime, 'yyyy-MM-dd') &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND to_char(operationtime, 'yyyy-MM-dd') &lt;= #{endTime}
+			</if>
+			<if test="isok !=null and isok !=''">
+				AND ISSUCCESS=#{isok}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countBy" resultType="int">
+		select count(*) as total from operationlog
+		<include refid="condition"/>
+	</select>
+	<select id="listBy" resultType="OperationLog">
+		SELECT operationtime, userName, action, updateobject, objectid, 
+			issuccess, RN FROM(
+			SELECT A.*, ROWNUM as RN FROM (
+				SELECT * from operationlog
+				left join users on users.userid = operationlog.currentuserid
+				<include refid="condition"/>
+				ORDER BY operationtime desc
+			) A WHERE ROWNUM &lt;=#{end}
+		) B WHERE B.RN &gt;= #{begin}
+	</select>
+</mapper>

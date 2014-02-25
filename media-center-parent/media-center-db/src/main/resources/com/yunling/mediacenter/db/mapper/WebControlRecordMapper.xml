@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.WebControlRecordMapper">
+	<insert id="insertRecord">
+		insert into WATCH_COMMAND_LOG
+		(ID, STB_IP, COMMAND, CUSTOMER_NAME, WATCH_IP, WATCH_PORT, STB_MAC,
+		CREATED_AT)
+		values (WATCH_COMMAND_LOG_ID.nextVal, #{stbIp}, #{command:VARCHAR}, #{customerName:VARCHAR},
+		#{watchIp}, #{watchPort:VARCHAR}, #{stbMac:VARCHAR}, sysdate)
+	</insert>
+	<select id="getLogs" parameterType="map" resultType="WebControlRecord">
+		select * from (
+			select STB_IP as stbIp, 
+				STB_MAC as stbMac,
+				COMMAND as command,
+				WATCH_IP as watchIp,
+				WATCH_PORT as watchPort,
+				CUSTOMER_NAME as customerName,
+				CREATED_AT as createdAt,
+				row_number() over(order by CREATED_AT desc) as R 
+			from WATCH_COMMAND_LOG
+			where 1=1
+			<if test="webControlRecord.stbMac != null and webControlRecord.stbMac != ''">
+				AND STB_MAC like #{webControlRecord.stbMac }
+			</if>
+			<if test="webControlRecord.command != null and webControlRecord.command != ''">
+				AND COMMAND = #{webControlRecord.command }
+			</if>
+			<if test="from != null and from != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+			</if>
+			<if test="to != null and to != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+			</if>
+		)
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="count" resultType="Count">
+		select count(*) as counts
+		from WATCH_COMMAND_LOG
+		where 1 = 1
+		<if test="webControlRecord.stbMac != null and webControlRecord.stbMac != ''">
+			AND STB_MAC like #{webControlRecord.stbMac }
+		</if>
+		<if test="webControlRecord.command != null and webControlRecord.command != ''">
+			AND COMMAND = #{webControlRecord.command }
+		</if>
+		<if test="from != null and from != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+		</if>
+		<if test="to != null and to != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+		</if>
+	</select>
+	<select id="getCommands" resultType="String">
+		select distinct COMMAND
+		from WATCH_COMMAND_LOG
+	</select>
+</mapper>

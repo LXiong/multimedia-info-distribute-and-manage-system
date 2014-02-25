@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="publishGroup" modelName="PublishGroup" tableName="publish_group" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<complex-key>
+		<column name="policy_id" type="number"/>
+		<column name="type_id" type="number"/>
+	</complex-key>
+</schema>

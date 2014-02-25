@@ -1,0 +1,22 @@
+watch.localInnetAddress=192.168.1.114
+watch.localOutnetAddress=192.168.1.114
+watch.port=9999
+watch.reportServiceUrl=http://127.0.0.1:6666/watch_report
+watch.readerIdleTimeSeconds=180
+watch.writerIdleTimeSeconds=180
+watch.allIdleTimeSeconds=180
+watch.faceToWeb=20000
+
+#database version checking
+db.version=201109191558
+db.version.check=true
+db.version.table=db_mc_version
+
+#weather data and image directory
+weather.data_dir=/home/yunling/weather/data/
+#image dir shout be ftp path.
+weather.image_dir=/home/yunling/weather/images/
+
+license.customer=kfc
+license.client.number=1000
+license.token=22E2252A173389688D07E0B917F0A822

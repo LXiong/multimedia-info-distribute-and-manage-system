@@ -1,0 +1,11 @@
+	<select id="listByUser" resultType="Role">
+		SELECT
+		  id as id  ,
+		  name as name  ,
+		  description as description  ,
+		  enabled as enabled  ,
+		  updated_at as updatedAt,
+		  nvl2(ur.username, '1','0') as assigned
+		FROM man_roles r LEFT JOIN man_user_role ur on r.id=ur.role_id AND ur.username=#{username}
+		WHERE enabled = '1'
+	</select>

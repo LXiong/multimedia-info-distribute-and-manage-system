@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="timed_area" modelName="TimedArea"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native" ></key>
+	<column name="layout_id" type="number"  />
+	<column name="policy_id" type="number"  />
+	<column name="name" type="varchar"  length="100" />
+	<column name="lcomment" type="varchar" length="200"  />
+	<column name="type" type="varchar" length="2" />
+	<column name="left" type="number" />
+	<column name="top" type="number" />
+	<column name="height" type="number" />
+	<column name="width" type="number" />
+	<column name="zindex" type="number" />
+	<column name="font" type="varchar" length="20" />
+	<column name="color" type="varchar" length="7" />
+	<column name="bgcolor" type="varchar" length="7" />
+	<column name="time_format" type="varchar" length="50"/>
+	
+</schema>

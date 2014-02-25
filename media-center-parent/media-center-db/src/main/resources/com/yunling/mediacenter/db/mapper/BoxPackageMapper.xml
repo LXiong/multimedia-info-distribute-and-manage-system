@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.BoxPackageMapper">
+	<select id="selectBoxCount" resultType="java.lang.Integer">
+			select count(*) from boxpackage
+	</select>
+	
+	<select id="list"  resultType="BoxPackage" parameterType="map" >
+		select * from (
+			SELECT a.*, rownum as rn FROM (
+				SELECT * FROM BOXPACKAGE ORDER BY UPDATEAT DESC
+			) a WHERE rownum &lt;= #{end}
+		) a where rn &gt;= #{begin}
+<!--		select * from (select row_number()over(order by updateat desc) r,u.* from boxpackage u) where r between #{begin} and #{end} -->
+	</select>
+	
+	<insert id="addBoxPackage" parameterType="BoxPackage">
+		<selectKey keyProperty="Id" order="BEFORE" resultType="java.lang.Long">
+			select boxpackage_id.nextval from dual
+		</selectKey>
+		insert into boxpackage( ID, NAME, DESCRIPTION, UPDATEAT) 
+		values(#{Id},#{name},#{description},#{updateAt})
+	</insert>
+	
+	<select id="getBoxPackageById" parameterType="java.lang.Long" resultType="BoxPackage">
+			select * from boxpackage where id = #{id}	
+	</select>
+	
+	<update id="updateBoxPackage" parameterType="BoxPackage">
+			update boxpackage set name=#{name},description=#{description} where id = #{Id}
+	</update>
+	
+	<update id="updateStbPackageId">
+			update stb set packageid=#{id} where stb_mac = #{stbmac}
+	</update>
+	
+	<update id="updateGroupsPackageId" >
+			update groups set packageid=#{id} where group_id=#{groupid}
+	</update>
+	<update id="updateStbPackageIByGroupId">
+			update stb set packageid=#{id} where group_id = #{groupid}
+	</update>
+	<select id="getStbByGroupId" resultType="Stb" parameterType="java.lang.Long">
+			select * from stb where group_id=#{groupid}
+	</select>
+	<delete id="delBoxPackageById" parameterType="java.lang.Long">
+			delete from boxpackage where id =#{id}
+	</delete>
+	<update id="updatePackageIdForGroups" parameterType="java.lang.Long">
+			update groups set packageid=0 where packageid=#{id}
+	</update>
+	<update id="updatePackageIdForStb"  parameterType="java.lang.Long">
+			update stb set packageid=0 where packageid=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.VideoMapper">
+	<insert id="addVideo"  parameterType="Video">
+		<selectKey keyProperty="videoId" order="BEFORE" resultType="java.lang.Long">
+			select seq_video.nextval from dual
+		</selectKey>
+			insert into video (videoid,readablename,name,plicyid) 
+			values(#{videoId},#{readablename},#{name},#{policyId})
+	</insert>
+	<!-- Edit by L.J. on 8/4/2011
+	<select id="findVideoByPolicyid" parameterType="java.lang.Long" resultType="Video">
+			<-select * from video where plicyid=#{policyid}->
+		select videoid, readablename, name
+		from video
+		join policy_video pv on pv.code = video.videoid
+		join policy on policy.policyid = pv.policy_id
+		where policy.policyid = #{policyid}
+	</select> -->
+</mapper>

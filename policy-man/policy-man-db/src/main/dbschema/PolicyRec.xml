@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="policyRec" modelName="PolicyRec" tableName="policy" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="policyId" type="number" generator="native"></key>
+	<column name="policy_number" type="number" />
+	<column name="comments" type="varchar" length="300"/>
+	<column name="begin_at" type="datetime" />
+	<column name="end_at" type="datetime" />
+	<column name="md5" type="varchar" length="64" />
+	<column name="size_bytes" type="number" />
+	<column name="update_time" type="datetime" updateValue="SYSDATE"/>
+	<column name="created_at" type="datetime"/>
+	<column name="file_path" type="varchar" length="100"/>
+	
+<!--	<result-map name="withTimeBuckets">-->
+<!--		<collection  alias="time_buckets" schemaName="time_buckets" property="timeBuckets"/>		-->
+<!--	</result-map>-->
+<!--	<result-map name="withPlayItems">-->
+<!--		<collection  alias="play_items" schemaName="play_items" property="playItems"/>		-->
+<!--	</result-map>-->
+<!-- 	<result-map name="withLayout" alias="policy"> -->
+<!-- 		<collection  alias="layouts" schemaName="timed_layout" property="layoutList"/>		 -->
+<!-- 	</result-map> -->
+
+</schema>

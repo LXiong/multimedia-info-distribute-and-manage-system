@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.yun-ling.com/menu"
+	xmlns="http://www.yun-ling.com/menu" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:element name="menus">
+	<xsd:complexType>
+		<xsd:choice minOccurs="1" maxOccurs="unbounded">
+			<xsd:element ref="menu" />
+		</xsd:choice>
+		<xsd:attribute name="nameSpace" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="menu">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="menu" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" />
+		<xsd:attribute name="key" type="xsd:string" />
+		<xsd:attribute name="action" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

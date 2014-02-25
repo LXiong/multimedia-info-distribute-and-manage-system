@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="policies" modelName="Policy" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="id" type="number" generator="native"></key>
+	<column name="name" type="varchar" length="100" />
+	<column name="comments" type="varchar" length="300"/>
+	<column name="start_time" type="datetime" />
+	<column name="end_time" type="datetime" />
+	<column name="status" type="varchar" length="200" />
+	<column name="created_at" type="datetime" noUpdate="true" insertValue="SYSDATE"/>
+	<column name="created_by" type="nvarchar" length="50" noUpdate="true"/>
+	<column name="updated_at" type="datetime" updateValue="SYSDATE"/>
+	<column name="updated_by" type="nvarchar" length="50"/>
+	<column name="submit_at" type="datetime"/>
+	<column name="submit_by" type="nvarchar" length="50"/>
+	<column name="rejected_at" type="datetime"/>
+	<column name="rejected_by" type="nvarchar" length="50"/>
+	<column name="reason" type="nvarchar" length="250"/>
+	<column name="audit_at" type="datetime"/>
+	<column name="audit_by" type="nvarchar" length="50"/>
+	<column name="published_at" type="datetime" />
+	<column name="published_by" type="nvarchar" length="50"/>
+	
+<!--	<result-map name="withTimeBuckets">-->
+<!--		<collection  alias="time_buckets" schemaName="time_buckets" property="timeBuckets"/>		-->
+<!--	</result-map>-->
+<!--	<result-map name="withPlayItems">-->
+<!--		<collection  alias="play_items" schemaName="play_items" property="playItems"/>		-->
+<!--	</result-map>-->
+<!-- 	<result-map name="withLayout" alias="policy"> -->
+<!-- 		<collection  alias="layouts" schemaName="timed_layout" property="layoutList"/>		 -->
+<!-- 	</result-map> -->
+
+</schema>

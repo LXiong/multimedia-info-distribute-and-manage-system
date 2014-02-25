@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="videos" modelName="Video"
+xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="code" type="varchar" length="64"></key>
+	<column name="origin_name" type="nvarchar" length="100" noUpdate="true" />
+	<column name="file_name" type="nvarchar" length="100" />
+	<column name="name" type="nvarchar" length="30" />
+	<column name="tag" type="nvarchar" length="100" />
+	<column name="description" type="nvarchar" length="300" />
+	<column name="status" type="varchar" length="50" />
+	<column name="live_time_start" type="datetime" />
+	<column name="live_time_end" type="datetime" />
+	<column name="submitter" type="nvarchar" length="50" />
+	<column name="submit_at" type="datetime" />
+	<column name="auditor" type="nvarchar" length="50" noUpdate="true" />
+	<column name="audit_at" type="datetime" noUpdate="true" />
+	<column name="width" type="number" />
+	<column name="height" type="number" />
+	<column name="play_time" type="number" />
+	<column name="discrim" type="nvarchar" length="50" />
+	<column name="media_type" type="nvarchar" length="20" />
+	<column name="media_size" type="number" noUpdate="true" />
+	
+	<default-condition>
+		<like column="name" />
+		<match column="media_type" />
+		<between column="audit_at" high="auditAtEnd" low="auditAtStart"/>
+	</default-condition>
+	
+	<alias name="v"/>
+</schema>

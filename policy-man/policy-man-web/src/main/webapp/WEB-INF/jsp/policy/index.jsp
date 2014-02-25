@@ -1,0 +1,1 @@
+<a href="<%=request.getContextPath()%>/policies/create">Go to create a new policy file.</a>

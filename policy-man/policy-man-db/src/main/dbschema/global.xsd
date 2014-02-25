@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.dwangel.com/global"
+	xmlns="http://www.dwangel.com/global" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:element name="global">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="types" />
+			<xsd:element ref="column-group" />
+			<xsd:element ref="outputs" />
+		</xsd:choice>
+		
+		<xsd:attribute name="databaseType" type="xsd:string">
+			<xsd:annotation>
+					<xsd:documentation><![CDATA[
+  Declare to use what type database. The type will be used in generating SQL
+					]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="types">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="type-def" />
+		</xsd:choice>
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="type-def">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+		<xsd:attribute name="javaType" type="xsd:string" />
+		<xsd:attribute name="dbType" type="xsd:string" />
+		<xsd:attribute name="jdbcType" type="xsd:string" />
+		<xsd:attribute name="needLength" type="xsd:boolean" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="column-group">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="column" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="column">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+		<xsd:attribute name="type" type="xsd:string" />
+		<xsd:attribute name="length" type="xsd:integer" />
+		<xsd:attribute name="noUpdate" type="xsd:boolean" />
+		<xsd:attribute name="insertValue" type="xsd:string" />
+		<xsd:attribute name="updateValue" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="outputs">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="output" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="output">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="property" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="property">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+		<xsd:attribute name="value" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

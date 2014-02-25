@@ -1,0 +1,9 @@
+	<select id="listByPolicy" resultMap="withArea">
+		SELECT <include refid="withArea_columns" />
+		FROM timed_layout tl LEFT JOIN timed_area ta on tl.id = ta.layout_id
+		LEFT JOIN timed_list tpl on ta.id = tpl.area_id LEFT JOIN timed_media tmd on tpl.id = tmd.playlist_id
+		WHERE tl.policy_id=#{policy_id}
+	</select>
+	<update id="deleteByPolicy">
+		DELETE FROM timed_layout WHERE policy_id = #{policy_id}
+	</update>

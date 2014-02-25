@@ -1,0 +1,11 @@
+	<update id="deleteByLayout">
+		DELETE FROM timed_list tpl WHERE EXISTS  
+		(SELECT TPL.ID FROM timed_list tpl JOIN timed_area ta ON ta.id= tpl.area_id 
+		WHERE ta.layout_id=#{layout_id})
+	</update>
+	<update id="deleteByArea">
+		DELETE FROM timed_list tpl WHERE area_id=#{area_id}
+	</update>
+	<update id="deleteByPolicy">
+		DELETE FROM timed_list WHERE policy_id=#{policy_id}
+	</update>

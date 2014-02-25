@@ -1,0 +1,23 @@
+	<select id="listTree" resultType="Category">
+		SELECT
+		  id as id  ,
+		  parent_id as parentId  ,
+		  name as name  ,
+		  description as description 
+		FROM category
+		CONNECT BY PRIOR id = parent_id
+		start with parent_id = 0
+	</select>
+	
+	<select id="getByModel" parameterType="Category" resultType="Category">
+		SELECT
+		  id as id  ,
+		  parent_id as parentId  ,
+		  name as name  ,
+		  description as description 
+		FROM category
+		WHERE parent_id = #{parentId}
+			<if test="name != null" >
+				and name = #{name}
+			</if>
+	</select>

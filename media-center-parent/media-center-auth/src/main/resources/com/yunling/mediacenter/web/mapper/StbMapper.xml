@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.web.mapper.StbMapper">
+	<select id="list" resultType="Stb">
+		select stb_mac as stbMac, 
+			province_id, province_name as provinceName, 
+			city_id, city_name as cityName, 
+			district_id, district_name as districtName, 
+			addr_detail as addrDetail 
+		from STB 
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+	</select>
+	<select id="findByProvinceId" resultType="Stb">
+		select STB.stb_mac as stbMac, 
+			STB.province_id, STB.province_name as provinceName, 
+			STB.city_id, STB.city_name as cityName, 
+			STB.district_id, STB.district_name as districtName, 
+			STB.addr_detail as addrDetail 
+		from STB 
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+		where STB.province_id = #{provinceId} 
+	</select>
+	<select id="findByCityId" resultType="Stb">
+		select stb_mac as stbMac, 
+			province_id, province_name as provinceName, 
+			city_id, city_name as cityName, 
+			district_id, district_name as districtName, 
+			addr_detail as addrDetail 
+		from STB 
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+		where STB.city_id = #{cityId}
+	</select>
+	<select id="findByDistrictId" resultType="Stb">
+		select stb_mac as stbMac, 
+			province_id, province_name as provinceName, 
+			city_id, city_name as cityName, 
+			district_id, district_name as districtName, 
+			addr_detail as addrDetail 
+		from STB 
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+		where STB.district_id = #{districtId}
+	</select>
+	<select id="findByMac" resultType="Stb">
+		select STB.stb_mac as stbMac, 
+			STB.province_id, prov.province_name as provinceName, 
+			STB.city_id, CITY.city_name as cityName, 
+			STB.district_id, dist.district_name as districtName, 
+			STB.addr_detail as addrDetail,
+			STB.stb_disabled as stbDisabled
+		from STB 
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+		where STB.stb_mac = #{stbMac}
+	</select>
+	<update id="updateToken" >
+		update STB set STB_TOKEN = #{accessToken} where STB_MAC = #{stbMac}
+	</update>
+	<insert id="insertStb" >
+		insert into STB (STB_MAC, STB_STATUS, STB_DISABLED, PROVINCE_ID, CITY_ID, DISTRICT_ID, ADDR_DETAIL) values (#{mac}, #{status}, 't', '1', '1', '1', 'addr_detail')
+	</insert>
+</mapper>

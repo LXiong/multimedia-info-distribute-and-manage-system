@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.LoginLogMapper">
+	<insert id="addLoginLog" parameterType="LoginLog">
+		insert into loginlog (logintime, remoteip, issuccess, loginid)
+		values(#{logintime}, #{remoteIp}, #{issuccess}, #{loginId})
+	</insert>
+
+	<sql id="loginLogCondition">
+		<where>
+			<if test="beginTime != null and beginTime != ''">
+				AND to_char(logintime, 'yyyy-MM-dd') &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND to_char(logintime, 'yyyy-MM-dd') &lt;= #{endTime}
+			</if>
+			<if test="isSuccess != null and isSuccess!=''">
+				AND ISSUCCESS=#{isSuccess}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBy" resultType="int">
+		select count(*) as total from loginlog
+		<include refid="loginLogCondition" />
+	</select>
+	<select id="listBy" resultType="LoginLog">
+		SELECT logintime, remoteip, issuccess, username, RN FROM(
+			SELECT A.*, ROWNUM as RN FROM (
+				SELECT * from loginlog
+				left join users on users.userid = loginlog.loginid
+				<include refid="loginLogCondition" />
+				ORDER BY logintime desc
+			) A WHERE ROWNUM &lt;=#{end}
+		) B WHERE B.RN &gt;= #{begin}
+	</select>
+</mapper>

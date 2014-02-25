@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<bean name="baseService" abstract="true">
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplate" />
+	</bean>
+	<bean id="policyService"  class="com.yunling.mediacenter.db.service.impl.PolicyServiceImpl" parent="baseService">
+	</bean>
+	<bean id="videoService"   class="com.yunling.mediacenter.db.service.impl.VideoServiceImpl" parent="baseService">
+	</bean>
+	<bean id="boxDownLogService" class="com.yunling.mediacenter.db.service.impl.BoxDownLogServiceImpl" parent="baseService">
+	</bean>
+	<bean id="boxDownStatusService" class="com.yunling.mediacenter.db.service.impl.BoxDownStatusServiceImpl" parent="baseService">
+	</bean>
+	<bean id="boxPerfLogService" class="com.yunling.mediacenter.db.service.impl.BoxPerfLogServiceImpl" parent="baseService">
+	</bean>
+	<bean id="boxPlayLogService" class="com.yunling.mediacenter.db.service.impl.BoxPlayLogServiceImpl" parent="baseService">
+	</bean>
+</beans>

@@ -1,0 +1,13 @@
+	<select id="listByPolicy" resultType="PolicyMedia">
+		SELECT <include refid="selectColumns" />
+		FROM policy_media
+		WHERE policy_id=#{policy_id}
+	</select>
+	<update id="deleteByPolicy">
+		DELETE FROM policy_media WHERE policy_id=#{policy_id}
+	</update>
+	<select id="listVideoByPolicy" resultMap="withVideo">
+		SELECT <include refid="withVideo_columns" />
+		FROM policy_media pm LEFT JOIN videos v ON pm.content = v.file_name
+		WHERE pm.policy_id=#{policy_id}
+	</select>

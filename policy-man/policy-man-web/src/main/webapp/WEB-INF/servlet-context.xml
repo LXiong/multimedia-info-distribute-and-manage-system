@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<bean id="menuBuilder" class="com.yunling.mediacenter.web.menu.MenuBuilder">
+		<property name="resourceName" value="/mainmenu.xml" />
+	</bean>
+	
+	<bean id="mainMenu"
+		class="com.yunling.mediacenter.web.menu.MenuBar" 
+		factory-bean="menuBuilder" factory-method="buildMenuFromResource">
+	</bean>
+	<bean id="cssMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+		<property name="sourceMap">
+			<map>
+				<entry key="jqueryui" value="ui-lightness/jquery-ui-1.8.5.custom.css" />
+			</map>
+		</property>
+	</bean>
+	<bean id="jsMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+		<property name="sourceMap">
+			<map>
+				<entry key="jqueryui" value="jquery-ui-1.8.5.custom.min.js" />
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="moduleMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+		<property name="sourceMap">
+			<map>
+				<entry key="agent" value="module.agent"></entry>
+				<entry key="updateWatcher" value="module.updateWatcher"></entry>
+				<entry key="mplayer"  value="module.mplayer"></entry>
+				<entry key="start" value="module.start"></entry>
+				<entry key="kernel" value="module.kernel"></entry>
+				<entry key="bootloader" value="module.bootloader"></entry>
+				<entry key="ramdisk" value="module.ramdisk"></entry>
+				<entry key="shell" value="module.shell"></entry>
+			</map>
+		</property>
+	</bean>
+</beans>

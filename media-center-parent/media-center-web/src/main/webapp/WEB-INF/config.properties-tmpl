@@ -1,0 +1,4 @@
+pageSize=20
+instant.message.path=/var/local/tv/instant_messages
+#database version checking
+db.version.check=true

@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.yun-ling.media</groupId>
+		<artifactId>policy-man-parent</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>policy-man-upload-watch</artifactId>
+	<name>policy-man-upload-watch ${version}</name>
+	<version>${global.version}</version>
+	<packaging>jar</packaging>
+	<description>[[<![CDATA[
+	This module is a java console program of watching uploading.
+	]]>
+	</description>
+	<properties>
+		<jetty.version>7.2.2.v20101205</jetty.version>
+	</properties>
+
+	<dependencies>
+		<!-- module dependencies start -->
+		<dependency>
+			<groupId>com.yun-ling.media</groupId>
+			<artifactId>policy-man-db</artifactId>
+			<version>${global.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.yun-ling.media</groupId>
+			<artifactId>policy-man-console</artifactId>
+			<version>${global.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-dbcp</groupId>
+		    <artifactId>commons-dbcp</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-server</artifactId>
+		    <version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-http</artifactId>
+		    <version>${jetty.version}</version>
+		</dependency>
+		<!-- module dependencies end -->
+	</dependencies>
+</project>

@@ -1,0 +1,1004 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.StbMapper">
+	<select id="searchStbs" parameterType="map" resultType="Stb">
+		select * from (select TMP.*, ROWNUM AS R from (
+			(select STB.stb_mac as stbMac,
+			STB.province_id as provinceId,
+			prov.province_name as provinceName,
+			STB.city_id as cityId,
+			CITY.city_name as cityName,
+			STB.district_id as districtId,
+			dist.district_name as districtName,
+			STB.addr_detail as addrDetail,
+			STB.stb_status as stbStatus,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			STB.stb_token as stbToken,
+			STB.status_update_time as statusUpdateTime,
+			STB.stb_id as stbId,
+			STB.stb_disabled as stbDisabled,
+			STB.conf_id as confId,
+			CONF.conf_name as confName,
+			STB.active_policy as activePolicy,
+			STB.active_policy_success_num as activePolicySuccessNum,
+			STB.active_policy_failed_num as activePolicyFailedNum,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.LAST_OFFLINE_TIME as lastOfflineTime, 
+			STB.SHOPNO as shopNo,
+			STB.SHOPNAME as shopName, 
+			STB.TERMINALIP as terminalIp, 
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.CONTACTS as contacts,
+			STB.PHONE as phone, 
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu, 
+			STB.DOWNLOAD_STATUS as downloadStatus
+		from STB
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join CONF on CONF.conf_id = STB.conf_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.TYPEID AND US.TYPEFLAG = 4
+		where STB.stb_status not in ('pending', 'refused', 'installed_pending')
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<if test="stb.stbStatus != null and stb.stbStatus != ''">
+			AND STB.stb_status = #{stb.stbStatus }
+		</if>
+		<if test="stb.activePolicy != null and stb.activePolicy != ''">
+			AND STB.active_policy like #{stb.activePolicy }
+		</if>
+		<if test="stb.shopNo != null and stb.shopNo != ''">
+			AND STB.SHOPNO like #{stb.shopNo }
+		</if>
+		<if test="stb.shopName != null and stb.shopName != ''">
+			AND STB.SHOPNAME like #{stb.shopName }
+		</if>
+		<!--
+		select distinct stb.* from stb join 
+		(select 0 as typeid, us.group_id as groupid from USER_STB us where USER_STB.userid=? 
+		union select us.type_id, 0 as groupid from USER_STB us where USER_STB.userid=?) stbauth on 
+		(stb.typeid=stbauth.typeid and groupid=0) or ()
+		--><!--<if test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L">
+			AND STB.group_id = #{stb.groupId } 
+		</if>-->
+		<choose>
+			<when test="stb.districtId != null and stb.districtId != ''">
+				AND STB.district_id = #{stb.districtId }
+			</when>
+			<when test="stb.cityId != null and stb.cityId != ''">
+				AND STB.city_id = #{stb.cityId } 
+			</when>
+			<when test="stb.provinceId != null and stb.provinceId != ''">
+				AND STB.province_id = #{stb.provinceId } 
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>)
+		union
+		(select STB.stb_mac as stbMac,
+			STB.province_id as provinceId,
+			prov.province_name as provinceName,
+			STB.city_id as cityId,
+			CITY.city_name as cityName,
+			STB.district_id as districtId,
+			dist.district_name as districtName,
+			STB.addr_detail as addrDetail,
+			STB.stb_status as stbStatus,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			STB.stb_token as stbToken,
+			STB.status_update_time as statusUpdateTime,
+			STB.stb_id as stbId,
+			STB.stb_disabled as stbDisabled,
+			STB.conf_id as confId,
+			CONF.conf_name as confName,
+			STB.active_policy as activePolicy,
+			STB.active_policy_success_num as activePolicySuccessNum,
+			STB.active_policy_failed_num as activePolicyFailedNum,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.LAST_OFFLINE_TIME as lastOfflineTime, 
+			STB.SHOPNO as shopNo,
+			STB.SHOPNAME as shopName, 
+			STB.TERMINALIP as terminalIp, 
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.CONTACTS as contacts,
+			STB.PHONE as phone, 
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu, 
+			STB.DOWNLOAD_STATUS as downloadStatus
+		from STB
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join CONF on CONF.conf_id = STB.conf_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.group_id AND US.TYPEFLAG = 5
+		where STB.stb_status not in ('pending', 'refused', 'installed_pending') 
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<if test="stb.stbStatus != null and stb.stbStatus != ''">
+			AND STB.stb_status = #{stb.stbStatus }
+		</if>
+		<if test="stb.activePolicy != null and stb.activePolicy != ''">
+			AND STB.active_policy like #{stb.activePolicy }
+		</if>
+		<if test="stb.shopNo != null and stb.shopNo != ''">
+			AND STB.SHOPNO like #{stb.shopNo }
+		</if>
+		<if test="stb.shopName != null and stb.shopName != ''">
+			AND STB.SHOPNAME like #{stb.shopName }
+		</if>
+		<!--<if test="stb.groupId != '' and stb.groupId != null and stb.groupId != 0L">
+			AND STB.group_id = #{stb.groupId } 
+		</if>-->
+		<choose>
+			<when test="stb.districtId != null and stb.districtId != ''">
+				AND STB.district_id = #{stb.districtId }
+			</when>
+			<when test="stb.cityId != null and stb.cityId != ''">
+				AND STB.city_id = #{stb.cityId } 
+			</when>
+			<when test="stb.provinceId != null and stb.provinceId != ''">
+				AND STB.province_id = #{stb.provinceId } 
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>)
+		) TMP 
+		order by TMP.typeName, TMP.groupName, TMP.stbMac
+		)
+		<if test="begin != 0 and end != 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="countStbs" parameterType="map" resultType="Count">
+		select count(DISTINCT TMP.stb_mac) as counts
+		from (
+		(select * from STB
+			left join USER_STB US on US.TYPEID = STB.TYPEID AND US.TYPEFLAG = 4
+		where STB.stb_status not in ('pending', 'refused', 'installed_pending')
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<!-- <choose>
+			<when test="stb.stbStatus != null and stb.stbStatus != ''" >
+				AND STB.stb_status = #{stb.stbStatus }
+			</when>
+			<when test="stb.stbStatus == null or stb.stbStatus == ''" >
+				AND STB.stb_status not in ('pending', 'refused', 'installed_pending')
+			</when>
+			<otherwise>
+				AND STB.stb_status not in ('pending', 'refused', 'installed_pending')
+			</otherwise>
+		</choose> -->
+		<if test="stb.stbStatus != null and stb.stbStatus != ''">
+			AND STB.stb_status = #{stb.stbStatus }
+		</if>
+		<if test="stb.activePolicy != null and stb.activePolicy != ''">
+			AND STB.active_policy like #{stb.activePolicy }
+		</if>
+		<if test="stb.shopNo != null and stb.shopNo != ''">
+			AND STB.SHOPNO like #{stb.shopNo }
+		</if>
+		<if test="stb.shopName != null and stb.shopName != ''">
+			AND STB.SHOPNAME like #{stb.shopName }
+		</if>
+		<!--<if test="stb.groupId != 0">
+			AND STB.group_id = #{stb.groupId } 
+		</if>-->
+		<choose>
+			<when test="stb.districtId != null and stb.districtId != ''">
+				AND STB.district_id = #{stb.districtId }
+			</when>
+			<when test="stb.cityId != null and stb.cityId != ''">
+				AND STB.city_id = #{stb.cityId } 
+			</when>
+			<when test="stb.provinceId != null and stb.provinceId != ''">
+				AND STB.province_id = #{stb.provinceId } 
+			</when>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>)
+		union
+		(select * from STB
+			left join USER_STB US on US.TYPEID = STB.group_id AND US.TYPEFLAG = 5
+		where 1 = 1
+		<if test="userId != 1L">
+			AND US.USERID = #{userId}  
+		</if>
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<if test="stb.stbStatus != null and stb.stbStatus != ''">
+			AND STB.stb_status = #{stb.stbStatus }
+		</if>
+		<if test="stb.activePolicy != null and stb.activePolicy != ''">
+			AND STB.active_policy like #{stb.activePolicy }
+		</if>
+		<if test="stb.shopNo != null and stb.shopNo != ''">
+			AND STB.SHOPNO like #{stb.shopNo }
+		</if>
+		<if test="stb.shopName != null and stb.shopName != ''">
+			AND STB.SHOPNAME like #{stb.shopName }
+		</if>
+		<!--<if test="stb.groupId != 0">
+			AND STB.group_id = #{stb.groupId } 
+		</if>-->
+		<choose>
+			<when test="stb.districtId != null and stb.districtId != ''">
+				AND STB.district_id = #{stb.districtId }
+			</when>
+			<when test="stb.cityId != null and stb.cityId != ''">
+				AND STB.city_id = #{stb.cityId } 
+			</when>
+			<when test="stb.provinceId != null and stb.provinceId != ''">
+				AND STB.province_id = #{stb.provinceId } 
+			</when>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>)
+		) TMP
+	</select>
+	
+	<select id="searchAuditStbs" resultType="Stb">
+		select * from (select TMP.*, ROWNUM AS R from (
+			(select STB.stb_mac as stbMac,
+			STB.province_id as provinceId,
+			prov.province_name as provinceName,
+			STB.city_id as cityId,
+			CITY.city_name as cityName,
+			STB.district_id as districtId,
+			dist.district_name as districtName,
+			STB.addr_detail as addrDetail,
+			STB.stb_status as stbStatus,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			STB.stb_token as stbToken,
+			STB.status_update_time as statusUpdateTime,
+			STB.stb_id as stbId,
+			STB.stb_disabled as stbDisabled,
+			STB.conf_id as confId,
+			CONF.conf_name as confName,
+			STB.active_policy as activePolicy,
+			STB.active_policy_success_num as activePolicySuccessNum,
+			STB.active_policy_failed_num as activePolicyFailedNum,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.LAST_OFFLINE_TIME as lastOfflineTime, 
+			STB.SHOPNO as shopNo,
+			STB.SHOPNAME as shopName, 
+			STB.TERMINALIP as terminalIp, 
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.CONTACTS as contacts,
+			STB.PHONE as phone, 
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu, 
+			STB.DOWNLOAD_STATUS as downloadStatus
+		from STB
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join CONF on CONF.conf_id = STB.conf_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.TYPEID AND US.TYPEFLAG = 4
+		where 1 = 1
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<choose>
+			<when test="stb.stbStatus == null or stb.stbStatus == ''" >
+				AND STB.stb_status in ('pending', 'refused', 'installed_pending')
+			</when>
+			<otherwise>
+				AND STB.stb_status = #{stb.stbStatus }
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>)
+		union
+		(select STB.stb_mac as stbMac,
+			STB.province_id as provinceId,
+			prov.province_name as provinceName,
+			STB.city_id as cityId,
+			CITY.city_name as cityName,
+			STB.district_id as districtId,
+			dist.district_name as districtName,
+			STB.addr_detail as addrDetail,
+			STB.stb_status as stbStatus,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			STB.stb_token as stbToken,
+			STB.status_update_time as statusUpdateTime,
+			STB.stb_id as stbId,
+			STB.stb_disabled as stbDisabled,
+			STB.conf_id as confId,
+			CONF.conf_name as confName,
+			STB.active_policy as activePolicy,
+			STB.active_policy_success_num as activePolicySuccessNum,
+			STB.active_policy_failed_num as activePolicyFailedNum,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.LAST_OFFLINE_TIME as lastOfflineTime, 
+			STB.SHOPNO as shopNo,
+			STB.SHOPNAME as shopName, 
+			STB.TERMINALIP as terminalIp, 
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.CONTACTS as contacts,
+			STB.PHONE as phone, 
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu, 
+			STB.DOWNLOAD_STATUS as downloadStatus
+		from STB
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT dist on dist.district_id = STB.district_id
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join CONF on CONF.conf_id = STB.conf_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.group_id AND US.TYPEFLAG = 5
+		where 1 = 1
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<choose>
+			<when test="stb.stbStatus == null or stb.stbStatus == ''" >
+				AND STB.stb_status in ('pending', 'refused', 'installed_pending')
+			</when>
+			<otherwise>
+				AND STB.stb_status = #{stb.stbStatus }
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>)
+		) TMP 
+		order by TMP.typeName, TMP.groupName, TMP.stbMac
+		)
+		<if test="begin != 0 and end != 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="countAuditStbs" resultType="int">
+		select count(DISTINCT TMP.stb_mac) as counts
+		from (
+		(select * from STB
+			left join USER_STB US on US.TYPEID = STB.TYPEID
+		where 1 = 1
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<choose>
+			<when test="stb.stbStatus == null or stb.stbStatus == ''" >
+				AND STB.stb_status in ('pending', 'refused', 'installed_pending')
+			</when>
+			<otherwise>
+				AND STB.stb_status = #{stb.stbStatus }
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+			AND US.TYPEFLAG = 4
+		</if>)
+		union
+		(select * from STB
+			left join USER_STB US on US.TYPEID = STB.group_id
+		where 1 = 1
+		<if test="stb.stbMac != null and stb.stbMac != ''">
+			AND STB.stb_mac like #{stb.stbMac} 
+		</if>
+		<choose>
+			<when test="stb.stbStatus == null or stb.stbStatus == ''" >
+				AND STB.stb_status in ('pending', 'refused', 'installed_pending')
+			</when>
+			<otherwise>
+				AND STB.stb_status = #{stb.stbStatus }
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="stb.groupId != null and stb.groupId != '' and stb.groupId != 0L" >
+				AND STB.group_id = #{stb.groupId}
+			</when>
+			<when test="stb.typeId != null and stb.typeId != '' and stb.typeId != 0L" >
+				AND STB.TYPEID = #{stb.typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId}  
+			AND US.TYPEFLAG = 5
+		</if>)
+		) TMP
+	</select>
+	
+	<select id="listByStatus" resultType="Stb">
+	SELECT stb_mac as stbMac,
+		STB.province_id as provinceId, province_name as provinceName,
+		STB.city_id as cityId, city_name as cityName,
+		STB.district_id as
+		districtId, district_name as districtName,
+		addr_detail as addrDetail,
+		stb_status as stbStatus,
+		customer_name as customerName,
+		PACKAGES.VERSION as packageVersion,
+		group_id as groupId,
+		last_access_time as lastAccessTime,
+		stb_token as stbToken, status_update_time as
+		statusUpdateTime,
+		stb_id as stbId, stb_disabled as stbDisabled,
+		conf_id
+		as confId
+	FROM STB
+		left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+		left join PROVINCE prov on prov.province_id = STB.province_id
+		left join CITY on CITY.city_id = STB.city_id
+		left join
+		DISTRICT dist on dist.district_id = STB.district_id
+	WHERE
+		STB.stb_status = #{status }
+	
+	</select>
+	<select id="getStbStatus" resultType="String">
+		select distinct stb_status as stbStatus
+		from STB
+		<!--select distinct stb_status as stbStatus
+		from (
+		(select * from STB
+		left join USER_STB US on US.TYPEID = STB.TYPEID
+		where 1=1
+		<if test="userId != 1L">
+			AND US.USERID = #{userId}  
+			AND US.TYPEFLAG = 4
+		</if>)
+		union
+		(select * from STB
+		left join USER_STB US on US.TYPEID = STB.group_id
+		where 1=1
+		<if test="userId != 1L">
+			AND US.USERID = #{userId}  
+			AND US.TYPEFLAG = 5
+		</if>)
+		)-->
+	</select>
+	<select id="findByMac" resultType="Stb">
+		select stb_mac as stbMac,
+			STB.province_id as provinceId, province_name as provinceName,
+			STB.city_id as cityId, city_name as cityName,
+			STB.district_id as
+			districtId, district_name as districtName,
+			addr_detail as addrDetail,
+			stb_status as stbStatus,
+			customer_name as customerName,
+			PACKAGES.VERSION as packageVersion,
+			stb_token as stbToken, 
+			status_update_time as statusUpdateTime,
+			group_id as groupId,
+			typeid as typeId,
+			stb_id as stbId, stb_disabled as stbDisabled,
+			conf_id as confId,
+			recv_rate as receivedKiloByte,
+			send_rate as sentKiloByte
+		from STB
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE prov on prov.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join
+			DISTRICT dist on dist.district_id = STB.district_id
+		where
+		STB.stb_mac =
+		#{stbMac, jdbcType=VARCHAR}
+	</select>
+
+	<select id="findActiveByToken" resultType="Stb">
+		select stb_mac as stbMac,
+		STB.province_id as provinceId, province_name as provinceName,
+		STB.city_id as cityId, city_name as cityName,
+		STB.district_id as
+		districtId, district_name as districtName,
+		addr_detail as addrDetail,
+		stb_status as stbStatus,
+		stb_token as stbToken, status_update_time as
+		statusUpdateTime,
+		stb_id as stbId, stb_disabled as stbDisabled
+		from STB
+		left join PROVINCE prov on prov.province_id = STB.province_id
+		left join
+		CITY on CITY.city_id = STB.city_id
+		left join DISTRICT dist on
+		dist.district_id = STB.district_id
+		where
+		STB.stb_token = #{stbToken }
+		and STB_STATUS in ('active', 'online', 'offline', 'nointernet') 
+		and STB_DISABLED = 'f' 
+	</select>
+	<select id="findAllByToken" resultType="Stb">
+		select stb_mac as stbMac,
+		STB.province_id as provinceId, province_name as provinceName,
+		STB.city_id as cityId, city_name as cityName,
+		STB.district_id as
+		districtId, district_name as districtName,
+		addr_detail as addrDetail,
+		stb_status as stbStatus,
+		stb_token as stbToken, status_update_time as
+		statusUpdateTime,
+		stb_id as stbId, stb_disabled as stbDisabled
+		from STB
+		left join PROVINCE prov on prov.province_id = STB.province_id
+		left join
+		CITY on CITY.city_id = STB.city_id
+		left join DISTRICT dist on
+		dist.district_id = STB.district_id
+		where
+		STB.stb_token = #{stbToken }
+	</select>
+	<update id="macOnline">
+		update STB set stb_status = 'online', terminalip = #{terminalIp} where stb_mac =
+		#{mac}
+	</update>
+	<update id="macOffline">
+		update STB set stb_status = 'offline',
+		last_offline_time = sysdate where stb_mac =
+		#{mac}
+	</update>
+	
+	<update id="offlineAllStb">
+		update STB set stb_status = 'offline' where stb_status = 'online'
+	</update>
+
+	<update id="updateActivePolicy">
+		update STB set active_policy =
+		#{activePolicy},
+		active_policy_failed_num =
+		#{activePolicyFailedNum},
+		active_policy_success_num =
+		#{activePolicySuccessNum} where
+		stb_mac =
+		#{mac}
+	</update>
+	<update id="macPause">
+		update STB set stb_status = 'pause' where stb_mac =
+		#{mac}
+	</update>
+	<update id="macResume">
+		update STB set stb_status = 'online' where stb_mac =
+		#{mac}
+	</update>
+	<update id="updateStatus">
+		update STB set stb_status = #{status} where stb_mac =
+		#{mac}
+	</update>
+	
+	<update id="lastAccess">
+		update STB set last_access_time = sysdate where stb_mac =
+		#{mac}
+	</update>
+	<update id="updateToken">
+		UPDATE stb 
+		SET stb_token = #{accessToken, jdbcType=VARCHAR} 
+		WHERE stb_mac = #{stbMac}
+	</update>
+	
+	<update id="updateInfos" parameterType="Stb">
+		update STB set
+			province_id = #{provinceId,jdbcType=VARCHAR }, 
+			city_id = #{cityId,jdbcType=VARCHAR },
+			district_id = #{districtId,jdbcType=VARCHAR }, 
+			addr_detail = #{addrDetail,jdbcType=VARCHAR },
+			<if test="groupId != null and groupId != '' and groupId != 0L">
+				group_id = #{groupId },
+			</if>
+			<if test="typeId != null and typeId != '' and typeId != 0L">
+				TYPEID = #{typeId },
+			</if>
+			SHOPNO = #{shopNo,jdbcType=VARCHAR },
+			SHOPNAME = #{shopName,jdbcType=VARCHAR },
+			CONTACTS = #{contacts,jdbcType=VARCHAR },
+			PHONE = #{phone,jdbcType=VARCHAR },
+			<if test="stbStatus != null and stbStatus != ''">
+				stb_status = #{stbStatus},
+			</if>
+			stb_mac = #{stbMac }
+		where stb_mac = #{stbMac }
+	</update>
+	<update id="updateConf" parameterType="Stb">
+		update STB set
+		conf_id=#{confId }
+		where stb_mac = #{stbMac }
+	</update>
+	<update id="audit" parameterType="Stb">
+		update STB set
+		stb_status=#{stbStatus }
+		where stb_mac = #{stbMac }
+	</update>
+	<update id="updateGroup" parameterType="Stb">
+		update STB set
+		group_id=#{groupId }
+		where stb_mac = #{stbMac }
+	</update>
+	<insert id="insertStb">
+		insert into STB (STB_MAC, CUSTOMER_NAME, STB_STATUS,
+		STATUS_UPDATE_TIME, STB_DISABLED, TERMINALIP)
+		values (#{mac}, #{customerName},
+		'pending', sysdate,
+		'f', #{terminalIp})
+	</insert>
+	<insert id="insertNewStb" parameterType="Stb">
+		insert into STB (STB_MAC, PROVINCE_ID, CITY_ID, DISTRICT_ID, 
+			ADDR_DETAIL, TYPEID, GROUP_ID, STB_STATUS, STATUS_UPDATE_TIME)
+		values (#{stbMac}, #{provinceId,jdbcType=VARCHAR}, 
+			#{cityId,jdbcType=VARCHAR}, #{districtId,jdbcType=VARCHAR}, 
+			#{addrDetail,jdbcType=VARCHAR}, #{typeId}, #{groupId}, 
+			#{stbStatus,jdbcType=VARCHAR}, sysdate)
+	</insert>
+	<select id="getAuditCount" resultType="java.lang.Integer">
+		select count(*) from stb
+		where stb_status = 'pending'
+	</select>
+	<delete id="delete" parameterType="Stb">
+		delete from STB
+		where stb_mac =
+		#{stbMac }
+	</delete>
+	<select id="standAloneReport" resultType="Statistics" parameterType="map">
+			select videoname,count(videoname)as count from boxplaylog where mac like #{mac} 
+			<if test="begin!=null and begin !='' ">
+				and logtime &gt;= #{begin}
+			</if>	
+			<if test="end!=null and end!=''">
+				and logtime  &lt;= #{end}
+			</if>			
+			group by videoname 
+	</select>
+	
+	<select id="countByPolicy" resultType="hashmap">
+	SELECT ACTIVE_POLICY AS policy, count(stb_mac) as count FROM 
+		(
+		SELECT ACTIVE_POLICY, stb_mac FROM stb
+		<if test="userid !=1L">
+		JOIN USER_STB US ON US.TYPEID = STB.TYPEID AND us.typeflag=4
+		WHERE us.userid=#{userid}
+		UNION
+		SELECT ACTIVE_POLICY, stb_mac FROM stb
+		JOIN USER_STB US ON US.typeid = STB.group_id AND us.typeflag=5
+		WHERE us.userid=#{userid}
+		</if>
+		) A
+	GROUP BY ACTIVE_POLICY
+	ORDER BY active_policy desc
+	</select>
+	
+	<select id="listOnlineByGroup" parameterType="java.lang.Long" resultType="Stb">
+	SELECT stb_mac as stbMac,
+		STB.province_id as provinceId, province_name as provinceName,
+		STB.city_id as cityId, city_name as cityName,
+		STB.district_id as
+		districtId, district_name as districtName,
+		addr_detail as addrDetail,
+		stb_status as stbStatus,
+		customer_name as customerName,
+		PACKAGES.VERSION as packageVersion,
+		shopno as shopNo,
+		shopname as shopName,
+		group_id as groupId,
+		last_access_time as lastAccessTime,
+		stb_token as stbToken, status_update_time as
+		statusUpdateTime,
+		stb_id as stbId, stb_disabled as stbDisabled,
+		conf_id
+		as confId
+	FROM STB
+		left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+		left join PROVINCE on PROVINCE.province_id = STB.province_id
+		left join CITY on CITY.city_id = STB.city_id
+		left join DISTRICT on DISTRICT.district_id = STB.district_id
+	WHERE
+		STB.stb_status in('online', 'updating') and group_id = #{group_id }
+	</select>
+	
+	<sql id="stbColumns">
+		STB.stb_mac as stbMac,
+		STB.province_id as provinceId, 
+		PROVINCE.province_name as provinceName,
+		STB.city_id as cityId, 
+		CITY.city_name as cityName,
+		STB.district_id as districtId, 
+		DISTRICT.district_name as districtName,
+		STB.addr_detail as addrDetail,
+		STB.stb_status as stbStatus,
+		STB.customer_name as customerName,
+		PACKAGES.VERSION as packageVersion,
+		STB.shopno as shopNo,
+		STB.shopname as shopName,
+		STB.group_id as groupId,
+		STB.typeid as typeId,
+		GROUPS.group_name as groupName,
+		GROUPTYPE.type_name as typeName,
+		STB.last_access_time as lastAccessTime,
+		STB.stb_token as stbToken, 
+		STB.status_update_time as statusUpdateTime,
+		STB.stb_id as stbId, 
+		STB.stb_disabled as stbDisabled,
+		STB.conf_id as confId
+	</sql>
+	
+	<select id="pageOnlinesByGroup" resultType="Stb">
+		select * 
+		from (
+			select rownum as r, <include refid="stbColumns"/>
+			from stb 
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE on PROVINCE.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT on DISTRICT.district_id = STB.district_id
+			left join GROUPTYPE on GROUPTYPE.type_id = STB.typeid
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			where STB.stb_status in ('online', 'updating') and STB.group_id = #{group_id} and rownum &lt; (#{page}*20+1)
+		) where r &gt; (#{page}-1)*20
+	</select>
+	
+	<select id="pageOnlinesByTypeAndGroup" resultType="Stb">
+		select * 
+		from (
+			select rownum as r, <include refid="stbColumns"/>
+			from stb 
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE on PROVINCE.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT on DISTRICT.district_id = STB.district_id
+			left join GROUPTYPE on GROUPTYPE.type_id = STB.typeid
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			where STB.stb_status in ('online', 'updating') and STB.typeid = #{type_id} and rownum &lt; (#{page}*20+1)
+			<if test="group_id != -1L">
+				and STB.group_id = #{group_id}
+			</if>
+		) where r &gt; (#{page}-1)*20
+	</select>
+	
+	<select id="listMacIn" resultType="Stb">
+		select <include refid="stbColumns"/>
+		from stb 
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE on PROVINCE.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT on DISTRICT.district_id = STB.district_id
+			left join GROUPTYPE on GROUPTYPE.type_id = STB.typeid
+			left join GROUPS on GROUPS.group_id = STB.group_id
+		where stb_mac in
+		<foreach collection="macs" item="mac" open="(" close=")" separator=",">
+			#{mac}
+		</foreach>
+	</select>
+	
+	<select id="listOnlineByGroupType" parameterType="java.lang.Long" resultType="Stb">
+		SELECT
+			<include refid="stbColumns"/> 
+		FROM STB
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE on PROVINCE.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT on DISTRICT.district_id = STB.district_id
+			left join GROUPTYPE on GROUPTYPE.type_id = STB.typeid
+			left join GROUPS on GROUPS.group_id = STB.group_id
+		WHERE
+			STB.stb_status in ('online', 'updating') and typeid = #{type_id }
+	</select>
+	
+	<select id="listLatestByGroups" parameterType="java.lang.Long" resultType="Stb">
+		SELECT
+			<include refid="stbColumns"/> 
+		FROM STB
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join PROVINCE on PROVINCE.province_id = STB.province_id
+			left join CITY on CITY.city_id = STB.city_id
+			left join DISTRICT on DISTRICT.district_id = STB.district_id
+			left join GROUPTYPE on GROUPTYPE.type_id = STB.typeid
+			left join GROUPS on GROUPS.group_id = STB.group_id
+		WHERE
+			STB.stb_status in ('online', 'updating') and group_id = #{group_id }
+	</select>
+	
+	<update id="updatePerformance" parameterType="Stb">
+		UPDATE stb
+		SET nmem = #{stb.nmem, jdbcType=VARCHAR},
+			cpu = #{stb.cpu, jdbcType=VARCHAR},
+			disk = #{stb.disk, jdbcType=VARCHAR}
+		WHERE stb_mac = #{stb.stbMac}
+	</update>
+	
+	<select id="listOnlineByGroupList" resultType="java.lang.String">
+		SELECT
+			stb_mac as stbMac
+		FROM STB
+		WHERE STB.stb_status in ('online', 'updating') AND group_id in (${groupList})
+	</select>
+	<!-- <update id="updatePackage" parameterType="java.lang.Long">
+		UPDATE stb 
+		SET PACKAGEID = #{packageId}
+		WHERE stb_mac = #{mac}
+	</update> -->
+	
+	<update id="updateDownloadStatus">
+		UPDATE stb 
+		SET download_status = #{downloadStatus}
+		WHERE stb_mac = #{mac}
+	</update>
+	<!-- create by L.J. on 8/25/2011 -->
+	<select id="getStbsStatus" parameterType="map" resultType="Stb">
+		select * from (select STB.stb_mac as stbMac,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu
+		from STB
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.TYPEID AND US.TYPEFLAG = 4
+		where 1 = 1
+		<if test="mac != null and mac != ''">
+			AND STB.stb_mac like #{mac} 
+		</if>
+		<choose>
+			<when test="groupId != null and groupId != '' and groupId != 0L" >
+				AND STB.group_id = #{groupId}
+			</when>
+			<when test="typeId != null and typeId != '' and typeId != 0L" >
+				AND STB.TYPEID = #{typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>
+		union
+		select STB.stb_mac as stbMac,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			PACKAGES.VERSION as packageVersion,
+			PACKAGES.NAME AS packageName,
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.nmem as nmem, 
+			STB.disk as disk, 
+			STB.cpu as cpu
+		from STB
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join PACKAGES on PACKAGES.ID = STB.PACKAGEID
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+			left join USER_STB US on US.TYPEID = STB.group_id AND US.TYPEFLAG = 5
+		where 1 = 1
+		<if test="mac != null and mac != ''">
+			AND STB.stb_mac like #{mac} 
+		</if>
+		<choose>
+			<when test="groupId != null and groupId != '' and groupId != 0L" >
+				AND STB.group_id = #{groupId}
+			</when>
+			<when test="typeId != null and typeId != '' and typeId != 0L" >
+				AND STB.TYPEID = #{typeId}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+		</if>)
+		order by typeName, groupName, stbMac
+	</select>
+	<update id="updateFlowRate" parameterType="Stb">
+		UPDATE stb
+		SET recv_rate = #{stb.receivedKiloByte, jdbcType=VARCHAR},
+			send_rate = #{stb.sentKiloByte, jdbcType=VARCHAR}
+		WHERE stb_mac = #{stb.stbMac}
+	</update>
+	<!-- add by LJ on 4/1 2012 -->
+	<update id="updatePackageByGroup" parameterType="java.lang.Long">
+		UPDATE stb 
+		SET PACKAGEID = #{packageId}
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	<update id="updatePackageByMac">
+		UPDATE stb 
+		SET PACKAGEID = #{packageId}
+		WHERE stb_mac = #{stb.stbMac,jdbcType=VARCHAR}
+	</update>
+	<select id="getStbByGroupId" parameterType="map" resultType="Stb">
+		select * from  STB
+		where group_id=#{groupId}
+	</select>
+	<!-- add by LJ on 4/1 2012 -->
+</mapper>

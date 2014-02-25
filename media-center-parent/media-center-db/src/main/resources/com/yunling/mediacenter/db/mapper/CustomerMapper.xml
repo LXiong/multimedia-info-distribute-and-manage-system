@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.CustomerMapper">
+
+	<select id="selectCustomerCount" resultType="java.lang.Integer">
+		select count(*) from customers
+	</select>
+
+
+	<select id="list" resultType="Customers" parameterType="map">
+		select * from (select rownum r,u.* from customers u) where r between
+		#{begin} and #{end} 
+	</select>
+	
+	<insert id="addCustomer" parameterType="Customers">
+		<selectKey keyProperty="custId" order="BEFORE" resultType="java.lang.Long">
+			select seq_customer.nextval from dual
+		</selectKey>
+		insert into customers
+		(custid,custname,address,telephone)
+		values(#{custId},#{custname},#{address},#{telephone})
+	</insert>
+	
+	<delete id="delById"  parameterType="java.lang.Long">
+		delete from customers where custid=#{custId}
+	</delete>
+	<select id="getCustomerById" parameterType="java.lang.Long" resultType="Customers">
+			select * from customers where custid=#{custId}
+	</select>
+	
+	<update id="updateCustomer" parameterType="Customers" >
+			update customers set custname=#{custname},address=#{address},telephone=#{telephone} where custid=#{custId}
+	</update>
+	
+</mapper>

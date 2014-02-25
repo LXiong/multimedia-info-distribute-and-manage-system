@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="publish_group" modelName="PublishRecord" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="id" type="number" generator="native"></key>
+	<column name="published_at" type="datetime" />
+	<column name="policy_number" type="varchar" length="50"/>
+	<column name="policy_id" type="number" />
+	<column name="type_id" type="number" />
+	<column name="group_id" type="number"/>
+	<column name="md5" type="varchar" length="100"/>
+	<column name="size_bytes" type="number"/>
+	<column name="file_path" type="varchar" length="200" />
+	
+</schema>

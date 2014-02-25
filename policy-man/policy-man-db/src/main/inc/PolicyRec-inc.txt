@@ -1,0 +1,7 @@
+<insert id="addPolicy"  parameterType="PolicyRec">
+		<selectKey keyProperty="policyId" order="BEFORE" resultType="java.lang.Long">
+			select seq_policy.nextval from dual
+		</selectKey>
+			insert into policy (policyid,policy_number,beginAt,endAt,createAt,file_path,md5,size_bytes,update_time) 
+			values(#{policyId},#{policyNumber},#{beginAt},#{endAt},#{createdAt},#{filePath},#{md5},#{sizeBytes},#{updateTime})
+	</insert>

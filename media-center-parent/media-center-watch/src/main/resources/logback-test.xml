@@ -1,0 +1,43 @@
+<configuration debug="true">
+	 <property name="log.base" value="." />
+	 
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder> 
+	      <pattern>%date [%2thread] %-5level %logger{35} - %msg %n</pattern> 
+	    </encoder>
+	</appender>
+
+	<appender name="timeroll"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>watch.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/watch-%d{yyyy-MM-dd}-%i.log.gz</FileNamePattern>
+			<MaxHistory>32</MaxHistory>
+			<TimeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<MaxFileSize>52MB</MaxFileSize>
+			</TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder> 
+	      <pattern>%date [%2thread] %-5level %logger{36} - %msg%n</pattern> 
+	    </encoder>
+	</appender>
+
+	<logger name="org.apache.commons" level="ERROR">
+	</logger>
+	
+	<logger name="org.apache.mybatis" level="DEBUG">
+	</logger>
+	
+	<logger name="ch.qos.logback" level="ERROR">
+	</logger>
+	
+	<logger name="com.yunling" level="DEBUG">
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="timeroll" />
+	</root>
+</configuration>
+

@@ -1,0 +1,10 @@
+	<select id="listByRole" resultType="Authority">
+		SELECT
+		  au.id as id  ,
+		  au.type as type  ,
+		  au.name as name  ,
+		  au.locale_zh_cn as localeZhCn 
+		  , nvl2(ra.role_id, '1','0') as granted
+		FROM
+		mm_authority au left join man_role_auth ra on au.id=ra.authority_id AND ra.role_id=#{role_id} 
+	</select>

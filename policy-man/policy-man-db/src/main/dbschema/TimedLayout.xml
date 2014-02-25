@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="timed_layout" modelName="TimedLayout" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="id" generator="native" type="number" />
+	<column name="policy_id" type="number"/>
+	<column name="layout_id" type="number"/>
+	<column name="start_time" type="varchar" length="5" />
+	<column name="end_time" type="varchar" length="5" />
+	<column name="name" type="varchar" length="100" />
+	<column name="use_percent" type="boolean" length="1"/>
+	<column name="width" type="number" />
+	<column name="height" type="number" />
+	<column name="lcomment" type="varchar" length="200" />
+	<column name="fullscreen" type="boolean" length="1"/>
+	
+	<result-map name="withArea" alias="tl">
+		<collection alias="ta" schemaName="timed_area" property="areas">
+			<collection alias="tpl" schemaName="timed_list" property="playLists">
+				<collection alias="tmd" schemaName="timed_media" property="medias"></collection>
+			</collection>
+		</collection>
+	</result-map>
+	
+<!-- 	<aliasColumns name="tl"/> -->
+	<alias name="tl" />
+</schema>

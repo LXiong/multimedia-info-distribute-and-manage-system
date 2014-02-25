@@ -1,0 +1,13 @@
+ffprobe.path=/usr/local/bin/
+
+upload.path=/home/yunling/upload/
+
+video.path=/home/yunling/media/VIDEO/
+
+media.path=ftp://yunling:yunling@192.168.1.114/media/
+
+preview.path=/home/yunling/media
+
+policy.output.path=/home/yunling/policy/
+
+download.path=ftp://yunling:yunling@192.168.1.114/policy/

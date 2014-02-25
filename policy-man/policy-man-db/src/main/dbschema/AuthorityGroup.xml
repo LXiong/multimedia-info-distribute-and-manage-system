@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="mm_auth_group" modelName="AuthorityGroup"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" />
+	<column name="name" type="varchar" length="50" />
+	<column name="locale_zh_cn" type="nvarchar" length="100" />
+	<result-map name="groupedAuthority" alias="ga">
+		<collection alias="auth" property="authorities" schemaName="mm_authority"/>
+	</result-map>
+</schema>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.StbOperationLogMapper">
+	<insert id="addLog" parameterType="StbOperationLog">
+		insert into STB_OPERATION_LOG
+			(LOGID, MAC, USERID, COMMAND, RESULT, RUNTIME)
+		values(STB_OPERATION_LOG_SEQ.nextVal, #{mac}, #{userId}, #{command},
+			#{result}, #{runTime})
+	</insert>
+	<select id="getLogs" parameterType="map" resultType="StbOperationLog">
+		select LOGID, MAC, USERNAME, COMMAND, RESULT, RUNTIME, R from (
+			select LOGID, MAC, USERID, COMMAND, RESULT, RUNTIME, 
+				row_number() over(order by RUNTIME desc) as R 
+			from STB_OPERATION_LOG
+			where 1=1
+			<if test="stbOperaLog.mac != null and stbOperaLog.mac != ''">
+				AND MAC like #{stbOperaLog.mac} 
+			</if>
+			<if test="stbOperaLog.command != null and stbOperaLog.command != ''">
+				AND COMMAND = #{stbOperaLog.command }
+			</if>
+			<if test="stbOperaLog.result != null and stbOperaLog.result != ''">
+				AND RESULT = #{stbOperaLog.result } 
+			</if>
+			<if test="from != null and from != ''">
+				AND to_char(RUNTIME, 'yyyy-MM-dd') &gt;= #{from}
+			</if>
+			<if test="to != null and to != ''">
+				AND to_char(RUNTIME, 'yyyy-MM-dd') &lt;= #{to}
+			</if>
+		) t
+		left join users on users.USERID = t.USERID
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="count" resultType="Count">
+		select count(*) as counts
+		from STB_OPERATION_LOG
+		where 1 = 1
+		<if test="stbOperaLog.mac != null and stbOperaLog.mac != ''">
+			AND MAC like #{stbOperaLog.mac} 
+		</if>
+		<if test="stbOperaLog.command != null and stbOperaLog.command != ''">
+			AND COMMAND = #{stbOperaLog.command }
+		</if>
+		<if test="stbOperaLog.result != null and stbOperaLog.result != ''">
+			AND RESULT = #{stbOperaLog.result } 
+		</if>
+		<if test="from != null and from != ''">
+			AND to_char(RUNTIME, 'yyyy-MM-dd') &gt;= #{from}
+		</if>
+		<if test="to != null and to != ''">
+			AND to_char(RUNTIME, 'yyyy-MM-dd') &lt;= #{to}
+		</if>
+	</select>
+	<select id="getCommands" resultType="String">
+		select distinct COMMAND
+		from STB_OPERATION_LOG
+	</select>
+	<select id="getResults" resultType="String">
+		select distinct RESULT
+		from STB_OPERATION_LOG
+	</select>
+</mapper>

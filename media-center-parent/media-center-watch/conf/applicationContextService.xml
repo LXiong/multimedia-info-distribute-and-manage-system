@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<bean name="baseService" abstract="true">
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplate" />
+	</bean>
+	<bean name="stbService"
+		class="com.yunling.mediacenter.db.service.impl.StbServiceImpl" parent="baseService">
+	</bean>
+	<bean name="moduleFileService"
+		class="com.yunling.mediacenter.db.service.impl.ModuleFileServiceImpl"
+		parent="baseService"></bean>
+	<bean name="configService"
+		class="com.yunling.mediacenter.db.service.impl.ConfigServiceImpl"
+		parent="baseService"></bean>
+	<bean name="policyService"
+		class="com.yunling.mediacenter.db.service.impl.PolicyServiceImpl"
+		parent="baseService"></bean>
+	<bean id="stbLoginRecordService"
+		class="com.yunling.mediacenter.db.service.impl.StbLoginRecordServiceImpl"
+		parent="baseService"></bean>
+	<bean id="webControlRecordService"
+		class="com.yunling.mediacenter.db.service.impl.WebControlRecordServiceImpl"
+		parent="baseService"></bean>
+	<bean id="stbSoftwareVersionService"
+		class="com.yunling.mediacenter.db.service.impl.StbSoftwareVersionServiceImpl"
+		parent="baseService"></bean>
+	<bean id="groupTypeService" class="com.yunling.mediacenter.db.service.impl.GroupTypeServiceImpl" parent="baseService"></bean>
+	<bean id="publishRecordService" class="com.yunling.mediacenter.db.service.impl.PublishRecordServiceImpl" parent="baseService"></bean>
+	<bean id="packageFilesService" class="com.yunling.mediacenter.db.service.impl.PackageFilesServiceImpl" parent="baseService"></bean>
+	<bean id="stbWarningInfoService" class="com.yunling.mediacenter.db.service.impl.StbWarningInfoServiceImpl" parent="baseService"/>
+	<bean id="cityService" class="com.yunling.mediacenter.db.service.impl.CityServiceImpl" parent="baseService"></bean>
+	<bean id="packageService" class="com.yunling.mediacenter.db.service.impl.PackagesServiceImpl" parent="baseService"></bean>
+</beans>

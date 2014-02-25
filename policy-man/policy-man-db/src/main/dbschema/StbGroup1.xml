@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="stbGroup1" modelName="StbGroup" tableName="GROUPTYPE" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="type_id" type="number"></key>
+	<column name="type_name" type="varchar" length="50"/>
+	<column name="type_description" type="varchar" length="200" />
+	<column name="folder_name" type="varchar" length="50" />
+	
+	<alias name="sg"/>
+</schema>

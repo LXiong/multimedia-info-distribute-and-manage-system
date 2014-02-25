@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<bean id="menuBuilder" class="com.yunling.web.MenuBuilder">
+		<property name="resourceName" value="/mainmenu.xml" />
+	</bean>
+	<bean id="mainMenu" class="com.yunling.web.MenuBar" factory-bean="menuBuilder"
+		factory-method="buildMenuFromResource">
+	</bean>
+	<context:component-scan base-package="com.yunling.mediaman.web.ctl">
+	</context:component-scan>
+
+	<!-- Configures the @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<security:global-method-security
+		secured-annotations="enabled" jsr250-annotations="enabled" />
+	<mvc:interceptors>
+		<bean class="com.yunling.mediaman.web.MenuInterceptor">
+			<property name="menuBar" ref="mainMenu" />
+		</bean>
+	</mvc:interceptors>
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="com.yunling.mediaman.web.WebBindingInitializerImpl" />
+		</property>
+	</bean>
+	
+	<bean id="multipartResolver"
+	    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	
+	    <!-- one of the properties available; the maximum file size in bytes -->
+	    <property name="maxUploadSize" value="9999999999"/>
+	</bean>
+
+	<bean id="viewResolver" class="com.yunling.mediaman.web.LayoutViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="defaultLayout" value="layouts/layout" />
+		<property name="layoutMapping">
+			<map>
+				<entry key="login_page" value="none" />
+				<entry key="error" value="layouts/error" />
+				<entry key="role/listauth" value="none" />
+				<entry key="**/grid*" value="none" />
+				<entry key="**/delete" value="none" />
+				<entry key="**/jdetail" value="none" />
+				<entry key="manuser/listrole" value="none" />
+				<entry key="/policy/_play_list" value="none" />
+				<entry key="/time_bucket/create" value="none" />
+				<entry key="/screen_area/list" value="none" />
+			</map>
+		</property>
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="menuBar" ref="mainMenu" />
+	</bean>
+
+	
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>WEB-INF/messages</value>
+				<value>WEB-INF/common</value>
+				<value>WEB-INF/menu</value>
+			</list>
+		</property>
+	</bean>
+</beans>

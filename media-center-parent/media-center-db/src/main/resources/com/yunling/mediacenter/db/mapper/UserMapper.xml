@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.UserMapper">
+	<select id="getUsers" resultType="Users" >
+		select userid as userId, loginname as loginName, username as userName, 
+			password, telephone, email, last_logintime as lastLoginTime
+		from users
+	</select>
+	<insert id="createUser" parameterType="Users">
+		<selectKey keyProperty="userId" order="BEFORE" resultType="java.lang.Long">
+			select user_id.nextval from dual
+		</selectKey>
+		insert into users(userid, loginname, username, password, telephone, 
+			email)
+		values(#{userId}, #{loginName}, #{userName}, #{password}, 
+			#{telephone}, #{email})
+	</insert>
+	<update id="updateUser" parameterType="Users" >
+		update users set username=#{userName}, email=#{email}, 
+			telephone=#{telephone}
+		where loginname=#{loginName}
+	</update>
+	<delete id="delByLoginName" parameterType="String">
+		delete from users where loginname=#{loginName}
+	</delete>
+	<select id="getUserByLoginName" parameterType="String" resultType="Users">
+		select userid as userId, loginname as loginName, username as userName, 
+			password, telephone, email, last_logintime as lastLoginTime 
+		from users where loginname=#{loginName}
+	</select>
+	
+	
+	<select id="findByIdPassword" parameterType="Users"
+		resultType="Users">
+		select * from users where loginname=#{loginName} and password=#{password}
+  	</select>
+	<!-- <select id="list"  resultType="Users" parameterType="map" >
+		select * from (select rownum r,u.* from users u) where r between #{begin} and #{end} 
+	</select> -->
+	<delete id="delById"  parameterType="java.lang.Long">
+		delete from users where userid=#{userId}
+	</delete>
+	<!-- <insert id="addUser" parameterType="Users">
+		<selectKey keyProperty="userId" order="BEFORE" resultType="java.lang.Long">
+			select user_id.nextval from dual
+		</selectKey>
+		insert into users 
+			    (userid,loginname,username,password,telephone,email,last_logintime)
+		values(#{userId},#{loginname},#{username},#{password},#{telephone},#{email},#{last_logintime})
+	</insert> -->
+	<select id="findUserByLoginName" parameterType="java.lang.String" resultType="Users">
+		select * from users where loginname=#{loginName}
+	</select>
+	<update id="changePassword"  parameterType="Users">
+			update users set password=#{password} where loginname=#{loginName}
+	</update>
+	
+	<select id="getUserById" parameterType="java.lang.Long" resultType="Users">
+			select * from users where userid=#{userid}
+	</select>
+	<select id="selectUserCount" resultType="java.lang.Integer">
+			select count(*) from users
+	</select>
+	
+	<select id="groupTypeList" resultType="GroupType">
+		select type_id as typeId,type_name as typeName,type_description as typeDescription from grouptype
+	</select>
+	
+	<select id="groupsList" resultType="Groups">
+		select group_id as groupId,group_name as groupName,type_id as typeId,group_description as groupDescription from groups
+	</select>
+	<select id="getUserStbById" resultType="UserStb" parameterType="java.lang.Long">
+			select * from user_stb where userid=#{userid}
+	</select>
+	<delete id="delUserStbById" parameterType="java.lang.Long">
+			delete from user_stb where userid=#{userid}
+	</delete>
+	<insert id="addUserStb">
+			insert into user_stb(USERID, TYPEID, TYPEFLAG) values(#{userid},#{typeid},#{typeflag})
+	</insert>
+	<select id="getAuthByStatus" parameterType="java.lang.String" resultType="java.lang.Integer">
+			select count(distinct(stb_mac)) from authenticate_records  where auth_status = #{string} 
+	</select>
+	<select id="getAuthByStatusIsFail" parameterType="java.lang.String" resultType="java.lang.Integer">
+			select count(*) from authenticate_records  where auth_status != #{string} 
+	</select>
+	<update id="updateLastLogin" parameterType="long">
+			update users set last_logintime = sysdate where userid=#{userid}
+	</update>
+	<select id="getStbByStatusIsPending" parameterType="java.lang.String" resultType="java.lang.Integer">
+			select count(distinct(stb_mac)) from stb where stb_status=#{userid}
+	</select>
+</mapper>

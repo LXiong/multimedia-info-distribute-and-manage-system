@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="timed_list" modelName="TimedList"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native" />
+	<column name="policy_id" type="number"  />
+	<column name="area_id" type="number"  />
+	<column name="type" type="varchar" length="2" />
+	<column name="start_time" type="varchar" length="5"/>
+	<column name="end_time" type="varchar" length="5"/>
+	<column name="loop" type="boolean" length="1" />
+	<column name="content" type="nvarchar" length="1000" />
+	<default-order-by-set>
+		<order-by column="start_time"/>
+	</default-order-by-set>
+	
+	<alias name="tpl" />
+</schema>

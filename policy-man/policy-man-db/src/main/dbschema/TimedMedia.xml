@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="timed_media" modelName="TimedMedia"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="id" type="number" generator="native"></key>
+	<column name="code" type="number"/>
+	<column name="start_time" type="varchar" length="30"/>
+	<column name="end_time" type="varchar" length="30"/>
+	<column name="policy_id" type="number"/>
+	<column name="layout_id" type="number"/>
+	<column name="area_id" type="number"/>
+	<column name="playlist_id" type="number"/>
+</schema>

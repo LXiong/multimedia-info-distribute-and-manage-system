@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="true" />
+    <constant name="struts.devMode" value="false" />
+    <constant name="struts.convention.action.suffix" value="Action"/>
+    <constant name="struts.convention.relative.result.types" value="layout,dispatcher,velocity,freemarker"/>
+    <bean type="org.apache.struts2.convention.ConventionsService" name="myconvention" 
+    	class="com.yunling.mediacenter.web.struts2.MyConventionsServiceImpl"/>
+    <constant name="struts.convention.conventionsService" value="myconvention"/>
+    <constant name="struts.convention.default.parent.package" value="myDefault"/>
+    <constant name="struts.convention.action.packages" value="com.yunling.mediacenter.web.actions"/>
+    
+	<constant name="struts.custom.i18n.resources" value="global-messages" />
+	
+    <package name="myDefault" namespace="/" extends="struts-default">
+    	<result-types>
+            <result-type name="chain" class="com.opensymphony.xwork2.ActionChainResult"/>
+            <result-type name="layout" class="com.yunling.mediacenter.web.struts2.JspLayoutResult">
+            	<param name="pagePath">/WEB-INF/content/</param>
+            	<param name="layoutMap">default:layout.jsp;kfc:layout.jsp</param>
+            </result-type>
+<!--            <result-type name="dispatcher" class="org.apache.struts2.dispatcher.ServletDispatcherResult"/>-->
+			<result-type name="jsp" class="org.apache.struts2.dispatcher.ServletDispatcherResult"/>
+            <result-type name="dispatcher" class="com.yunling.mediacenter.web.struts2.JspLayoutResult" default="true">
+            	<param name="pagePath">/WEB-INF/content/</param>
+            	<param name="layoutMap">default:layout.jsp;kfc:layout.jsp</param>
+            </result-type>
+            <result-type name="freemarker" class="org.apache.struts2.views.freemarker.FreemarkerResult"/>
+            <result-type name="httpheader" class="org.apache.struts2.dispatcher.HttpHeaderResult"/>
+            <result-type name="redirect" class="org.apache.struts2.dispatcher.ServletRedirectResult"/>
+            <result-type name="redirectAction" class="org.apache.struts2.dispatcher.ServletActionRedirectResult"/>
+            <result-type name="stream" class="org.apache.struts2.dispatcher.StreamResult"/>
+            <result-type name="velocity" class="org.apache.struts2.dispatcher.VelocityResult"/>
+            <result-type name="xslt" class="org.apache.struts2.views.xslt.XSLTResult"/>
+            <result-type name="plainText" class="org.apache.struts2.dispatcher.PlainTextResult" />
+        </result-types>
+        
+        <interceptors>
+    		<interceptor name="loginInterceptor" 
+    			class="com.yunling.mediacenter.web.struts2.LoginInterceptor"/>
+    		<interceptor name="userRoleInterceptor" 
+    			class="com.yunling.mediacenter.web.struts2.UserRoleInterceptor"/>
+    		<interceptor name="menuInterceptor" 
+    			class="com.yunling.mediacenter.web.struts2.MenuInterceptor"/>
+    		<interceptor-stack name="myDefaultStack">
+    			<interceptor-ref name="loginInterceptor"/>
+    			<interceptor-ref name="userRoleInterceptor"/>
+    			<interceptor-ref name="menuInterceptor"/>
+    			<interceptor-ref name="exception"/>
+                <interceptor-ref name="alias"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="debugging"/>
+                <interceptor-ref name="scopedModelDriven"/>
+                <interceptor-ref name="modelDriven"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="params">
+                  <param name="excludeParams">dojo\..*,^struts\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+    		</interceptor-stack>
+    	</interceptors>
+    	
+    	<default-interceptor-ref name="myDefaultStack" />
+    	
+        <default-action-ref name="home" />
+        
+        <global-results>
+    		<result name="home" type="redirect">home</result>
+    		<result name="login" type="redirect">login</result>
+    		<result name="configError" type="jsp">exception.jsp</result>
+    		<result name="prompt" type="jsp">/WEB-INF/content/result.jsp</result>
+    		<result name="excel" type="stream">
+    			<param name="contentType">application/ms-excel</param>
+<!--    			<param name="contentDisposition">attachment;filename=${exportFileName}</param>-->
+				<param name="inputName">inputStream</param>
+				<param name="allowCaching">false</param> 
+				<param name="bufferSize">1024</param>
+    		</result>
+    		<result name="downloadStream" type="stream">
+    			<param name="contentType">application/octet-stream</param>
+    			<param name="inputName">stream4Down</param>
+    			<param name="allowCaching">false</param>
+    		</result>
+    		<result name="downloadImage" type="stream">
+    			<param name="contentType">image/jpeg</param>
+    			<param name="inputName">image4show</param>
+    			<param name="allowCaching">false</param>
+    		</result>
+    	</global-results>
+    	
+<!--    	<global-exception-mappings>-->
+<!--    		<exception-mapping result="configError" exception="com.yunling.mediacenter.web.RuntimeConfigException">-->
+<!--    		</exception-mapping>-->
+<!--    	</global-exception-mappings>-->
+    </package>
+
+    <!-- Add packages here -->
+
+</struts>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:jee="http://www.springframework.org/schema/jee" 
+		xmlns:security="http://www.springframework.org/schema/security" 
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+			">
+	<bean id="propertyConfiguror" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/config.properties</value>
+				<!-- <value>/WEB-INF/jdbc.properties</value> -->
+				<jee:jndi-lookup jndi-name="policyManConfig" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="ffprobe" class="com.yunling.mediaman.web.utils.Ffprobe">
+		<property name="ffpath" value="${ffprobe.path}"></property>
+	</bean><!-- <jee:jndi-lookup jndi-name="ffmpegPath" /> -->
+	
+	<bean id="webConfig" class="com.yunling.mediaman.web.WebConfig">
+		<property name="pageSize" value="${page.size}" />
+		<property name="uploadPath" value="${upload.path}"></property>
+		<!-- <property name="videoPath" value="${video.path}"></property> -->
+		<property name="previewPath" value="${preview.path}"></property>
+	</bean>
+	
+	<bean id="policyExporter" class="com.yunling.mediaman.web.PolicyExporter">
+		<property name="outputPath" value="${policy.output.path}"></property>
+		<property name="downloadPath" value="${download.path}"/>
+		<!-- <property name="videoPath" value="${video.path}"/> -->
+		<property name="mediaPath" value="${media.path}"/>
+		<!-- <property name="localVideoPath" value="${localvideo.path}"/> -->
+		<property name="customerName" value="${customer.name}"/>
+		<property name="webControl" ref="webControl"/>
+		<property name="policyRecService" ref="policyRecService"/>
+		<property name="publishRecordService" ref="publishRecordService"/>
+		<property name="stbGroupService" ref="stbGroupService"/>
+	</bean>
+	
+	<bean name="webControl" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl">
+			<jee:jndi-lookup jndi-name="watchSerivceUrl" />
+		</property>
+		<property name="serviceInterface">
+			<value>com.yunling.mediacenter.server.remote.WebControl</value>
+		</property>
+	</bean>
+	
+	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/policyman"/>
+<!-- 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> -->
+<!-- 		<property name="driverClassName" value="${jdbc.driverClassName}"/> -->
+<!-- 		<property name="url" value="${jdbc.url}"/> -->
+<!-- 		<property name="username" value="${jdbc.username}"/> -->
+<!-- 		<property name="password" value="${jdbc.password}"/> -->
+<!-- 		<property name="testOnBorrow" value="true"/> -->
+<!-- 		<property name="validationQuery" value="select 1 from dual"/> -->
+<!-- 		<property name="maxActive" value="19" /> -->
+<!-- 	</bean> -->
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<import resource="applicationContextSecurity.xml" />
+	<bean id="userDetailImpl" class="com.yunling.web.UserDetailImpl">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="usersByUsernameQuery" value="SELECT username, password, enabled, disp_name FROM man_users WHERE username=?" />
+		<property name="authoritiesByUsernameQuery" value="SELECT ur.username, auth.name as authority
+FROM man_user_role ur
+JOIN man_role_auth ra ON ur.role_id = ra.role_id
+JOIN mm_authority auth ON ra.authority_id=auth.id
+WHERE ur.username=?" />
+	</bean>
+	
+	<import resource="classpath:/applicationContextMyBatis.xml" />
+	<!-- timing publish, quartz -->
+	<bean id="timingPublish" class="com.yunling.mediaman.web.TimingPublisher">
+		<property name="publishTaskService">
+			<ref bean="publishTaskService"></ref>
+		</property>
+		<property name="policyService">
+			<ref bean="policyService"></ref>
+		</property>
+		<property name="policyMediaService">
+			<ref bean="policyMediaService"></ref>
+		</property>
+		<property name="stbGroupService">
+			<ref bean="stbGroupService"></ref>
+		</property>
+		<property name="timedLayoutService">
+			<ref bean="timedLayoutService"></ref>
+		</property>
+		<property name="policyExporter">
+			<ref bean="policyExporter"></ref>
+		</property>
+		<property name="stbGroupLevelTwoService">
+			<ref bean="stbGroupLevelTwoService"></ref>
+		</property>
+	</bean>
+	
+	<bean id="jobtask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="timingPublish"/>
+		</property>
+		<property name="targetMethod">
+			<value>publish</value>
+		</property>
+	</bean>
+	
+	<bean id="doTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="jobtask"></ref>
+		</property>
+		<property name="cronExpression">
+			<value>0 0,10,20,30,40,50 * * * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="startQuartz" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="doTime"></ref>
+			</list>
+		</property>
+	</bean>
+</beans>

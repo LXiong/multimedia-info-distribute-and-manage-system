@@ -1,0 +1,15 @@
+watch.path=/home/yunling/upload
+
+destination.path=/home/yunling/media
+
+server.port=2096
+
+shutdown.password=e2cc30833f417002e31bf434a9e34ad5
+
+watch.interval=10000
+
+move.interval=10000
+
+db.version=201109191611
+db.version.check=true
+db.version.table=db_pm_version

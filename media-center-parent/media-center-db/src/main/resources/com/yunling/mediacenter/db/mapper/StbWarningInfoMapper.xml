@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.StbWarningInfoMapper">
+	<sql id="infoColumns">
+		id as id,
+		status as status,
+		stb_mac as stbMac,
+		warning_type as warningType,
+		details as details,
+		severity as severity,
+		created_at as createdAt
+	</sql>
+	
+	
+	<sql id="find">
+		SELECT 
+			<include refid="infoColumns"/>
+		FROM stb_warning_info
+	</sql>
+	
+	
+	<select id="getById" resultType="StbWarningInfo" parameterType="java.lang.Long">
+		<include refid="find"/>
+		WHERE id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="StbWarningInfo">
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+			select STB_WARNING_INFO_ID.nextval from dual
+		</selectKey>
+		insert into STB_WARNING_INFO(id, stb_mac, warning_type, details, severity, created_at)
+		values(#{id}, #{stbMac,jdbcType=VARCHAR}, #{warningType,jdbcType=VARCHAR}, #{details, jdbcType=VARCHAR}, #{severity, jdbcType=VARCHAR}, sysdate)
+	</insert>
+	
+	<sql id="infoColumnsWithPage">
+		rownum as r,
+		id as id,
+		status as status,
+		stb_mac as stbMac,
+		warning_type as warningType,
+		details as details,
+		severity as severity,
+		created_at as createdAt
+	</sql>
+	
+	<select id="pageWithoutCondition" parameterType="java.lang.Integer" resultType="StbWarningInfo">
+		select * from(
+			select <include refid="infoColumnsWithPage"/>
+			from(
+				select *
+				from stb_warning_info
+				order by created_at desc
+			)
+			where rownum &lt; #{info.page}*20+1
+		)
+		where r &gt; (#{info.page} - 1)*20
+	</select>
+	<select id="query" parameterType="StbWarningInfo" resultType="StbWarningInfo">
+		select * from(
+			select <include refid="infoColumnsWithPage"/>
+			from (
+				select *
+				from stb_warning_info
+				where 1 = 1
+				<if test="info.stbMac != null and info.stbMac != ''">
+					AND stb_mac like '%'||#{info.stbMac}||'%'
+				</if>
+				<if test="info.warningType != null and info.warningType != ''">
+					AND warning_type = #{info.warningType}
+				</if>
+				<if test="info.status != null and info.status != ''">
+					AND status = #{info.status}
+				</if>
+				order by created_at desc
+			)
+			where rownum &lt; #{info.page}*20+1
+		)
+		where r &gt; (#{info.page} - 1)*20
+		
+	</select>
+	
+	<update id="update" parameterType="StbWarningInfo">
+		update stb_warning_info 
+		set status = #{info.status, jdbcType=VARCHAR}
+		where id = #{info.id}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from stb_warning_info where id = #{id}
+	</delete>
+</mapper>

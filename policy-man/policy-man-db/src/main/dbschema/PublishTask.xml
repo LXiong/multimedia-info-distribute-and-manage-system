@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="publish_task" modelName="PublishTask"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native"/>
+	<column name="policy_id" type="number"/>
+	<column name="publish_time" type="datetime"/>
+	<column name="publish_areas" type="nvarchar" length="200"/>
+	<column name="status" type="nvarchar" length="20" defaultValue="'pending'"/>
+	<column name="created_at" type="datetime" noUpdate="true" insertValue="SYSDATE"/>
+	
+</schema>

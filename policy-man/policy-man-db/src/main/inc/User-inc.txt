@@ -1,0 +1,5 @@
+	<update id="updatePassword" parameterType="User">
+		UPDATE man_users SET
+			password = #{password,jdbcType=VARCHAR}
+		WHERE username = #{username}
+	</update>

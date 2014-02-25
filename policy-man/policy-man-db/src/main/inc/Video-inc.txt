@@ -1,0 +1,193 @@
+	<select id="count" resultType="int">
+		select count(*)
+		from videos
+	</select>
+	
+	<select id="listByPage" resultType="Video" >
+		SELECT
+			code  ,
+		  	originName  ,
+		  	fileName  ,
+		  	name ,
+		  	tag  ,
+		  	description  ,
+		  	status  ,
+		  	liveTimeStart  ,
+		  	liveTimeEnd  ,
+		  	submitter  ,
+		  	submitAt  ,
+		  	auditor  ,
+		  	auditAt  ,
+		  	width  ,
+		  	height  ,
+		  	playTime  ,
+		  	discrim , 
+		  	mediaType  ,
+		  	mediaSize 
+		FROM (
+			SELECT
+			  	code as code  ,
+			  	origin_name as originName  ,
+			  	file_name as fileName  ,
+		  		name as name  ,
+			  	tag as tag  ,
+			  	description as description  ,
+			  	status as status  ,
+			  	live_time_start as liveTimeStart  ,
+			  	live_time_end as liveTimeEnd  ,
+			  	submitter as submitter  ,
+			  	submit_at as submitAt  ,
+			  	auditor as auditor  ,
+			  	audit_at as auditAt  ,
+			  	width as width  ,
+			  	height as height  ,
+			  	play_time as playTime  ,
+			  	discrim as discrim , 
+			  	media_type as mediaType  ,
+		  		media_size as mediaSize , 
+			  	rownum as R
+			FROM videos
+		)
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	
+	<select id="search" resultType="Video">
+		SELECT <include refid="selectColumns"/>
+		FROM videos
+		WHERE tag like '%'||#{tag}||'%'
+	</select>
+	
+	<select id="listAllByCodes" resultType="Video">
+		SELECT <include refid="selectColumns"/>
+		FROM videos
+		WHERE code in 
+		<foreach collection="array" item="code" index="index" open="(" separator="," close=")">
+		#{code}
+		</foreach>
+	</select>
+	<resultMap type="Video" id="videoResult">
+		<collection property="categories" javaType="ArrayList" column=""></collection>
+	</resultMap>
+	
+	<select id="countWaitingMoved" resultType="int">
+		SELECT COUNT(*) FROM videos where status='WAITING_MOVED'
+	</select>
+	
+	<select id="listWaitingMoved" resultType="Video">
+		SELECT
+			<include refid="selectColumns"/>
+		FROM videos where status='WAITING_MOVED'
+	</select>
+	
+	<select id="listByPolicy" resultType="Video">
+		SELECT
+			<include refid="alias_col_v"/>
+		FROM videos v join policy_video pv on v.code = pv.code
+		WHERE pv.policy_id=#{policy_id}
+	</select>
+
+	<select id="countByNormal" resultType="int" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM videos
+		<where>
+			status not in ('REVIEW')
+			<if test="name != null and name != ''">
+				AND name like #{name}
+		    </if>
+			<if test="media_type != null and media_type != ''">
+				AND media_type = #{media_type}
+		    </if>
+			<if test="auditAtStart!=null and auditAtStart!=''">
+				AND to_char(audit_at, 'yyyy-MM-dd') &gt;= #{auditAtStart}
+		    </if>
+			<if test="auditAtEnd!=null and auditAtEnd!=''">
+				AND to_char(audit_at, 'yyyy-MM-dd') &lt;= #{auditAtEnd}
+		    </if>
+		</where>
+	</select>
+
+	<select id="listByNormal" resultType="Video" parameterType="java.util.Map">
+		<if test="begin != null and end !=null">
+			SELECT * FROM (
+			SELECT t.*, rownum as rn FROM (
+		</if>
+		SELECT
+		code as code ,
+		origin_name as originName ,
+		file_name as fileName ,
+		name as name ,
+		tag as tag ,
+		description as description ,
+		status as status ,
+		live_time_start as liveTimeStart ,
+		live_time_end as liveTimeEnd ,
+		submitter as submitter ,
+		submit_at as submitAt ,
+		auditor as auditor ,
+		audit_at as auditAt ,
+		width as width ,
+		height as height ,
+		play_time as playTime ,
+		discrim as discrim ,
+		media_type as mediaType ,
+		media_size as mediaSize
+		FROM videos
+		<where>
+			status not in ('REVIEW')
+			<if test="name != null and name != ''">
+				AND name like #{name}
+		    </if>
+			<if test="media_type != null and media_type != ''">
+				AND media_type = #{media_type}
+		    </if>
+		    <if test="auditAtStart!=null and auditAtStart!=''">
+				AND to_char(audit_at, 'yyyy-MM-dd') &gt;= #{auditAtStart}
+		    </if>
+			<if test="auditAtEnd!=null and auditAtEnd!=''">
+				AND to_char(audit_at, 'yyyy-MM-dd') &lt;= #{auditAtEnd}
+		    </if>
+		</where>
+		<if test="begin != null and end !=null">
+			) t WHERE rownum &lt;= #{end}
+			) WHERE rn &gt;=#{begin}
+		</if>
+	</select>
+	
+	<select id="countByReview" resultType="int">
+		SELECT COUNT(*) FROM
+		videos where status='REVIEW'
+	</select>
+
+	<select id="listByReview" resultType="Video" parameterType="java.util.Map">
+		<if test="begin != null and end !=null">
+			SELECT * FROM (
+			SELECT t.*, rownum as rn FROM (
+		</if>
+		SELECT
+			code as code ,
+			origin_name as originName ,
+			file_name as fileName ,
+			name as name ,
+			tag as tag ,
+			description as description ,
+			status as status ,
+			live_time_start as liveTimeStart ,
+			live_time_end as liveTimeEnd ,
+			submitter as submitter ,
+			submit_at as submitAt ,
+			auditor as auditor ,
+			audit_at as auditAt ,
+			width as width ,
+			height as height ,
+			play_time as playTime ,
+			discrim as discrim ,
+			media_type as mediaType ,
+			media_size as mediaSize
+		FROM videos 
+		where status='REVIEW'
+		<if test="begin != null and end !=null">
+			) t WHERE rownum &lt;= #{end}
+			) WHERE rn &gt;=#{begin}
+		</if>
+	</select>

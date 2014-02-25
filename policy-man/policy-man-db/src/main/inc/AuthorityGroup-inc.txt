@@ -1,0 +1,38 @@
+	<resultMap type="AuthorityGroup" id="groupedAuthority2">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="localeZhCn" column="locale_zh_cn"/>
+    	<collection property="authorities" ofType="Authority">
+			<id property="id" column="auth_id"/>
+			<result property="type" column="auth_type"/>
+			<result property="name" column="auth_name"/>
+			<result property="localeZhCn" column="auth_locale_zh_cn"/>
+			<result property="granted" column="auth_granted"/>
+    	</collection>
+	</resultMap>
+	
+	<select id="listWithAuth" resultMap="groupedAuthority">
+		SELECT
+		  ag.id as id  ,
+		  ag.name as name  ,
+		  ag.locale_zh_cn as locale_zh_cn,
+		  auth.id as auth_id  ,
+		  auth.type as auth_type  ,
+		  auth.name as auth_name  ,
+		  auth.locale_zh_cn as auth_locale_zh_cn,
+		FROM mm_auth_group ag join mm_authority auth on ag.id=auth.type
+	</select>
+	
+	<select id="listByRole" resultMap="groupedAuthority2">
+		SELECT
+		  ag.id as id  ,
+		  ag.name as name  ,
+		  ag.locale_zh_cn as locale_zh_cn,
+		  auth.id as auth_id  ,
+		  auth.type as auth_type  ,
+		  auth.name as auth_name  ,
+		  auth.locale_zh_cn as auth_locale_zh_cn,
+		  nvl2(mra.role_id,'1','0') as auth_granted
+		FROM mm_auth_group ag join mm_authority auth on ag.id=auth.type
+		LEFT JOIN man_role_auth mra on auth.id = mra.authority_id and mra.role_id=#{role_id}
+	</select>

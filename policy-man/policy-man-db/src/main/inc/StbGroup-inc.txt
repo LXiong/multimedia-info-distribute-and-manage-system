@@ -1,0 +1,6 @@
+
+	<select id="listByPublishedPolicy" resultType="StbGroup">
+		SELECT DISTINCT <include refid="alias_col_sg" />
+		FROM GROUPTYPE sg JOIN publish_group pg ON sg.type_id = pg.type_id
+		WHERE pg.policy_id = #{policyId}
+	</select>

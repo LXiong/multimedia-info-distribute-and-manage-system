@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.PackageFilesMapper">
+	<insert id="addPackageFiles" parameterType="PackageFiles">
+			insert into packagefiles(PACKAGEID, MODULE, FILEID)
+			 values(#{packageId},#{module},#{fileId}) 
+	</insert>
+	
+	<delete id="deletePackFiles">
+			delete from packagefiles where packageid=#{id} and fileid=#{fileid}
+	</delete>
+	
+	<select id="countByFileId" parameterType="Long" resultType="int">
+		select count(*) as usedCount 
+		from PACKAGEFILES
+		where fileId = #{fileId}
+	</select>
+	<delete id="delBoxPackageFilesByPackageId" parameterType="java.lang.Long">
+			delete from packagefiles where packageid = #{id}
+	</delete>
+	<select id="getByModuleAndVersion" resultType="PackageFiles">
+		SELECT * 
+		FROM packagefiles
+		WHERE fileid in (
+			SELECT id 
+			FROM modulefile
+			WHERE module = #{module} and version = #{version}
+		) and module = #{module}
+	</select>
+</mapper>

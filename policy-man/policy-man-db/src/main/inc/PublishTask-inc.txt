@@ -1,0 +1,6 @@
+	<select id="listByStatus" parameterType="java.lang.String" resultType="PublishTask">
+		SELECT
+		  <include refid="selectColumns"/>
+		FROM publish_task
+		WHERE status = #{status}
+	</select>

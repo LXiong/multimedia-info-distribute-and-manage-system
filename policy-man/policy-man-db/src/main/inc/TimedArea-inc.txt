@@ -1,0 +1,7 @@
+	<update id="deleteByLayout">
+	DELETE FROM timed_area WHERE layout_id=#{layout_id}
+	</update>
+	
+	<update id="deleteByPolicy">
+		DELETE FROM timed_area WHERE policy_id=#{policy_id}
+	</update>

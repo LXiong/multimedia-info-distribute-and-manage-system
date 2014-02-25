@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus nameSpace="/" xmlns="http://www.yun-ling.com/menu"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.yun-ling.com/menu mainmenu.xsd">
+	<menu key="nav.home" action="/home">
+		<menu key="nav.home" action="/home" />
+	</menu>
+	<menu key="file.manage">
+		<menu key="upload.file" action="/videos/uploadform"></menu>
+		<menu key="uploading.list" action="/videos/uploadinglist"></menu>
+		<menu key="uploaded.list" action="/videos/uploadedlist"></menu>
+		<menu key="review.list" action="/videos/reviewlist"></menu>
+		<menu key="video.manage" action="/videos/list"></menu>
+		<menu key="category.manage" action="/videos/categories"></menu>
+	</menu>
+	<menu key="layout.manage">
+		<menu key="layout.list" action="/layout">
+			<menu key="layout.edit" action="/layout/edit"></menu>
+		</menu>
+	</menu>
+	<menu key="policy.manage">
+		<menu key="policy.new" action="/policy/new"></menu>
+		<menu key="policy.list" action="/policy/list">
+			<menu key="policy.edit" action="/policy/edit"></menu>
+			<menu key="policy.view" action="/policy/view"></menu>
+		</menu>
+		
+		<menu key="policy.status.submitted" action="/policy/status/submitted">
+			<menu key="policy.view" action="/policy/submitted"></menu>
+		</menu>
+		<menu key="policy.status.passed" action="/policy/status/passed">
+			<menu key="policy.view" action="/policy/passed"></menu>
+		</menu>
+		<menu key="policy.status.rejected" action="/policy/status/rejected">
+			<menu key="policy.view" action="/policy/rejected"></menu>
+		</menu>
+		<menu key="policy.status.published" action="/policy/status/published">
+			<menu key="policy.view" action="/policy/published"></menu>
+		</menu>
+		
+		
+		<!--  
+		<menu key="policy.list.submitted" action="/policy/listsubmitted">
+			<menu key="policy.view" action="/policy/viewsubmitted"></menu>
+		</menu>
+		<menu key="policy.list.passing" action="/policy/listpassed">
+			<menu key="policy.view" action="/policy/viewpassed"></menu>
+		</menu>
+		<menu key="policy.list.passed" action="/policy/listpassed">
+			<menu key="policy.view" action="/policy/viewpassed"></menu>
+		</menu>
+		-->
+	</menu>
+	
+	<menu key="nav.user.manage">
+		<menu key="sub.user.list" action="/manuser" />
+		<menu key="sub.role.list" action="/role/list" />
+	</menu>
+	<menu name="Personal" action="/personal">
+		<menu key="sub.personal.info" action="/personal">
+			<menu key="sub.personal.edit" action="/personal/edit" />
+		</menu>
+		<menu key="sub.personal.passwordform" action="/personal/passwd">
+			<menu key="sub.personal.passwordform" action="/personal/changed" />
+			<menu key="sub.personal.passwordform" action="/personal/nochange" />
+		</menu>
+	</menu>
+</menus>

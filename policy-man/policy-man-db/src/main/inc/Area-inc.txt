@@ -1,0 +1,8 @@
+		<delete id="deleteByLayoutId"  parameterType="java.lang.Long">
+				delete from area
+				where layoutid=#{layoutid}
+		</delete>
+		<select id="getByLayoutId" parameterType="java.lang.Long" resultType="Area">
+			select * from area where layoutid=#{layoutid}
+		</select>
+

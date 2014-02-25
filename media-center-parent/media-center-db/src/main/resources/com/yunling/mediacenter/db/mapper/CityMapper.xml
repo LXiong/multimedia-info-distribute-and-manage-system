@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.CityMapper">
+	<select id="findByProvinceId" resultType="City">
+		select <include refid="cityColumns"/>
+		from city
+		where province_id = #{provinceId}
+	</select>
+	<select id="findByCityName" resultType="City">
+		select <include refid="cityColumns"/>
+		from city
+		where city_name = #{cityName} and province_id = #{provinceId}
+	</select>
+	<select id="findById" resultType="City">
+		select <include refid="cityColumns"/>
+		from city
+		where city.city_id = #{id}
+	</select>
+	<select id="findAll" resultType="City">
+		SELECT <include refid="cityColumns"/>
+		FROM city
+	</select>
+	<update id="updateNewColumns">
+		update city
+		set query_weather_id = #{queryWeatherId,jdbcType=VARCHAR},
+			city_name_pinyin = #{cityNamePinyin,jdbcType=VARCHAR}
+		where city_id = #{cityId}
+	</update>
+	<sql id="cityColumns">
+		city_id as cityId, 
+		city_name as cityName,
+		query_weather_id as queryWeatherId, 
+		city_name_pinyin as cityNamePinyin,
+		province_id as provinceId
+	</sql>
+</mapper>

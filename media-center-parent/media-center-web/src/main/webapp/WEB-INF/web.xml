@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_9" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Daily Status Register Application</display-name>
+	<context-param>
+	    <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+	    <param-value>global-messages</param-value>
+	</context-param>		
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+		/WEB-INF/applicationContextWeb.xml
+		</param-value>
+	</context-param>
+	
+	<filter>
+        <filter-name>struts-cleanup</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+    </filter>
+					
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	</filter>
+	
+	<listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+	
+	<filter-mapping>
+        <filter-name>struts-cleanup</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	    		
+	<welcome-file-list>
+		<welcome-file>login.action</welcome-file>
+	</welcome-file-list>
+	
+	<session-config>
+        <session-timeout>120</session-timeout>
+    </session-config>
+    
+	<!-- <resource-ref>
+		<description>Oracle DataSource reference</description>
+		<res-ref-name>jdbc/mediacenter</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+		<res-sharing-scope>Shareable</res-sharing-scope>
+	</resource-ref> -->
+
+	<!-- <env-entry>
+	  <env-entry-name>hessianSerivceUrl</env-entry-name>  
+	  <env-entry-type>java.lang.String</env-entry-type>
+	  <env-entry-value>http://192.168.1.115:20000/web_control</env-entry-value>
+	</env-entry>
+	<env-entry>
+	  <env-entry-name>authSerivceUrl</env-entry-name>  
+	  <env-entry-type>java.lang.String</env-entry-type>
+	  <env-entry-value>http://192.168.1.115:6666/authenticate_query</env-entry-value>
+	</env-entry>
+	<env-entry>
+	  <env-entry-name>watchServerIp</env-entry-name>  
+	  <env-entry-type>java.lang.String</env-entry-type>
+	  <env-entry-value>192.168.1.104</env-entry-value>
+	</env-entry>
+	<env-entry>
+	  <env-entry-name>watchServerPort</env-entry-name>  
+	  <env-entry-type>java.lang.Integer</env-entry-type>
+	  <env-entry-value>7777</env-entry-value>
+	</env-entry> -->
+	
+	<!--env-entry>
+	  <env-entry-name>mediaCenterWebConfigPath</env-entry-name>  
+	  <env-entry-type>java.lang.String</env-entry-type>
+	  <env-entry-value>file:///D:/var/local/tv/config/media-center-config.properties</env-entry-value>
+	</env-entry-->
+	
+    <jsp-config>
+    	<taglib>
+    		<taglib-uri>/WEB-INF/yun-tags.tld</taglib-uri>
+    		<taglib-location>/WEB-INF/yun-tags.tld</taglib-location>
+    	</taglib>
+    </jsp-config>
+</web-app>

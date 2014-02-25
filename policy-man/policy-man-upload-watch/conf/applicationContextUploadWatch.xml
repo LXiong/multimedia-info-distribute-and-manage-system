@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<import resource="applicationContextBase.xml" />
+	<bean id="uploadWatch" class="com.yunling.mediaman.uploadwatch.UploadWatch">
+		<property name="watchRunner" ref="watchRunner" />
+		<property name="moveRunner" ref="moveRunner" />
+		<property name="server" ref="jettyServer" />
+	</bean>
+	
+	<bean id="jettyServer" class="org.eclipse.jetty.server.Server">
+		<constructor-arg value="${server.port}"></constructor-arg>
+	</bean>
+	
+	<bean id="shutdownHandler" class="com.yunling.mediaman.uploadwatch.ShutdownHandler">
+		<property name="passwd" value="${shutdown.password}" />
+	</bean>
+	
+	<bean id="watchRunner" class="com.yunling.mediaman.uploadwatch.WatchRunner">
+		<property name="watchPath" value="${watch.path}" />
+		<property name="millis" value="${watch.interval}" />
+		<property name="uploadingVideoService" ref="uploadingVideoService" />
+		<property name="filterWithExt" value="false" />
+		<property name="extensions">
+			<list>
+				<value>.avi</value>
+				<value>.jpg</value>
+				<value>.png</value>
+				<value>.txt</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="moveRunner" class="com.yunling.mediaman.uploadwatch.MoveRunner">
+		<property name="sourcePath" value="${watch.path}" />
+		<property name="destPath" value="${destination.path}" />
+		<property name="millis" value="${move.interval}" />
+		<property name="videoService" ref="videoService" />
+		<property name="uploadingVideoService" ref="uploadingVideoService" />
+	</bean>
+</beans>

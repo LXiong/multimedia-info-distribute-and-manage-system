@@ -1,0 +1,10 @@
+#每页显示记录数
+page.size=20 
+
+#客户
+customer.name=GONGJIAO
+
+#数据库版本验证
+db.version=201109191611
+db.version.check=true
+db.version.table=db_pm_version

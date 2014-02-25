@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<bean id="macChannels" class="java.util.concurrent.ConcurrentHashMap"
+		scope="singleton">
+	</bean>
+	<bean id="queryResults" class="java.util.concurrent.ConcurrentHashMap"
+		scope="singleton">
+	</bean>
+	<bean id="allChannels" class="org.jboss.netty.channel.group.DefaultChannelGroup"></bean>
+
+
+	<!-- watchApp -->
+	<bean id="watchApplication" class="com.yunling.mediacenter.server.App">
+		<property name="watchServer">
+			<ref bean="watchServer"></ref>
+		</property>
+		<property name="jettyExecutor">
+			<ref bean="jettyExecutor"></ref>
+		</property>
+		<property name="watchReporter">
+			<ref bean="watchReporter"></ref>
+		</property>
+		<property name="config">
+			<ref bean="watchConfig" />
+		</property>
+		<property name="stbService">
+			<ref bean="stbService" />
+		</property>
+		<property name="stbLoginRecordService">
+			<ref bean="stbLoginRecordService" />
+		</property>
+		<property name="updateWeatherTask" ref="updateWeatherTask"/>
+		<property name="customerId" value="${license.customer}"/>
+		<property name="clientNumber" value="${license.client.number}"/>
+		<property name="license" value="${license.token}"/>
+	</bean>
+
+
+	<!-- hessian interface , face to rpc -->
+
+	<bean name="/remoteService"
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service">
+			<ref bean="watchService" />
+		</property>
+		<property name="serviceInterface">
+			<value>
+				com.yunling.mediacenter.server.remote.WebControl
+			</value>
+		</property>
+	</bean>
+	<bean id="watchService"
+		class="com.yunling.mediacenter.server.remote.impl.WebControlImpl">
+		<constructor-arg index="0">
+			<ref bean="macChannels"></ref>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<ref bean="queryResults"></ref>
+		</constructor-arg>
+		<constructor-arg index="2">
+			<ref bean="webControlRecordService" />
+		</constructor-arg>
+		<constructor-arg index="3">
+			<ref bean="stbService"></ref>
+		</constructor-arg>
+		<constructor-arg index="4">
+			<ref bean="watchConfig"></ref>
+		</constructor-arg>
+	</bean>
+
+	<!--
+		report to auth server
+	-->
+	<bean id="remoteWatchReporter"
+		class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+		<property name="serviceUrl">
+			<value>${watch.reportServiceUrl}</value>
+		</property>
+		<property name="serviceInterface">
+			<value>com.yunling.mediacenter.server.remote.WatcherReport</value>
+		</property>
+	</bean>
+	
+	<bean id="watchReporter" class="com.yunling.mediacenter.server.localproxy.LocalWatcherReport">
+		<property name="reporter">
+			<ref bean="remoteWatchReporter"></ref>
+		</property>
+	</bean>
+
+	<!-- jettyExecutor face to web-->
+	<bean id="jettyExecutor" class="com.yunling.mediacenter.server.JettyExecutor">
+		<property name="server">
+			<ref bean="jettyServer"></ref>
+		</property>
+		<property name="webControl">
+			<ref bean="watchService" />
+		</property>
+	</bean>
+	<bean id="jettyServer" class="org.eclipse.jetty.server.Server">
+		<!-- web, hessian`s port -->
+		<constructor-arg index="0" value="${watch.faceToWeb}"
+			type="int">
+		</constructor-arg>
+		<property name="handler">
+			<ref bean="jettyContext"></ref>
+		</property>
+	</bean>
+	<bean id="jettyContext" class="org.eclipse.jetty.servlet.ServletContextHandler">
+		<constructor-arg index="0" value="1" type="int">
+		</constructor-arg>
+		<property name="contextPath">
+			<value>
+				/
+			</value>
+		</property>
+	</bean>
+
+	<bean name="jettyBaseAction" abstract="true">
+		<property name="stbService" ref="stbService" />
+		<property name="macChannels" ref="macChannels" />
+	</bean>
+
+
+	<!-- watch server, face to stb -->
+	<bean id="watchServer" class="com.yunling.mediacenter.server.WatchServer">
+		<property name="bootstrap">
+			<ref bean="bootstrap"></ref>
+		</property>
+		<property name="allChannels">
+			<ref bean="allChannels"></ref>
+		</property>
+		<property name="config">
+			<ref bean="watchConfig" />
+		</property>
+	</bean>
+	<bean id="watchConfig" class="com.yunling.mediacenter.utils.WatchServerConfiguration">
+		<property name="localInnetAddress">
+			<value>${watch.localInnetAddress}</value>
+		</property>
+		<property name="localOutnetAddress">
+			<value>${watch.localOutnetAddress}</value>
+		</property>
+		<property name="port">
+			<value>${watch.port}</value>
+		</property>
+	</bean>
+	<bean id="bootstrap" class="org.jboss.netty.bootstrap.ServerBootstrap">
+		<constructor-arg type="org.jboss.netty.channel.ChannelFactory">
+			<ref bean="channelFactory" />
+		</constructor-arg>
+		<property name="pipelineFactory">
+			<ref bean="pipelineFactory"></ref>
+		</property>
+	</bean>
+	<bean id="channelFactory"
+		class="org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory">
+		<constructor-arg index="0">
+			<ref bean="executorService"></ref>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<ref bean="executorService"></ref>
+		</constructor-arg>
+	</bean>
+	<bean id="executorService" class="java.util.concurrent.Executors"
+		factory-method="newCachedThreadPool" scope="prototype">
+	</bean>
+	<bean id="pipelineFactory" class="com.yunling.mediacenter.server.WatchPipelineFactory">
+		<constructor-arg index="0">
+			<ref bean="idleTimer" />
+		</constructor-arg>
+		<property name="handler">
+			<ref bean="watchHandler" />
+		</property>
+		<property name="readerIdleTimeSeconds">
+			<value>${watch.readerIdleTimeSeconds}
+			</value>
+		</property>
+		<property name="writerIdleTimeSeconds">
+			<value>${watch.writerIdleTimeSeconds}
+			</value>
+		</property>
+		<property name="allIdleTimeSeconds">
+			<value>${watch.allIdleTimeSeconds}
+			</value>
+		</property>
+	</bean>
+
+	<bean id="idleTimer" class="org.jboss.netty.util.HashedWheelTimer">
+	</bean>
+
+	<bean name="agentRequestAction" abstract="true">
+		<property name="stbService" ref="stbService" />
+		<property name="stbSoftwareVersionService" ref="stbSoftwareVersionService"></property>
+		<property name="configService" ref="configService" />
+		<property name="policyService" ref="policyService" />
+		<property name="packageFilesService" ref="packageFilesService" />
+		<property name="moduleFileService" ref="moduleFileService" />
+		<property name="macChannels" ref="macChannels" />
+		<property name="queryResults" ref="queryResults" />
+		<property name="cityService" ref="cityService"/>
+		<property name="config" ref="watchConfig" />
+		<property name="weatherConfig" ref="weatherConfig"/>
+		<property name="allCitiesWeather" ref="allCitiesWeather"/>
+		<property name="watchReporter" ref="watchReporter" />
+		<property name="stbLoginRecordService" ref="stbLoginRecordService" />
+		<property name="stbWarningInfoService" ref="stbWarningInfoService"/>
+	</bean>
+
+	<bean id="watchHandler" class="com.yunling.mediacenter.server.WatchHandler">
+
+		<property name="watchReporter" ref="watchReporter" />
+		<property name="allChannels">
+			<ref bean="allChannels"></ref>
+		</property>
+		<property name="maxConnections" value="${license.client.number}"/>
+		<property name="config">
+			<ref bean="watchConfig" />
+		</property>
+		<property name="macChannels" ref="macChannels" />
+		<property name="stbService" ref="stbService" />
+		<property name="stbLoginRecordService" ref="stbLoginRecordService" />
+		<property name="requestActions">
+			<map>
+				<entry key="login">
+					<bean name="stbLogin" class="com.yunling.mediacenter.server.agent.StbLogin"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="online">
+					<bean name="stbOnline" class="com.yunling.mediacenter.server.agent.StbOnline"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="latest_policy">
+					<bean name="newest_policy"
+						class="com.yunling.mediacenter.server.agent.AskLastestPolicy"
+						parent="agentRequestAction">
+						<property name="supportArea">
+							<value>false</value>
+						</property>
+						<property name="supportGroupType">
+							<value>true</value>
+						</property>
+						<property name="publishRecordService">
+							<ref bean="publishRecordService" />
+						</property>
+						<property name="groupTypeService">
+							<ref bean="groupTypeService" />
+						</property>
+						<property name="city2Folder">
+							<map>
+								<entry key="21">
+									<value>0001-010</value>
+								</entry>
+								<entry key="2">
+									<value>0001-021</value>
+								</entry>
+								<entry key="47">
+									<value>0001-020</value>
+								</entry>
+								<entry key="48">
+									<value>0001-0755</value>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="latest_conf">
+					<bean name="askLatestConfigurationFile"
+						class="com.yunling.mediacenter.server.agent.AskLatestConfigurationFile"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="pause">
+					<bean name="askLatestConfigurationFile" class="com.yunling.mediacenter.server.agent.PlayerPause"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="resume">
+					<bean name="askLatestConfigurationFile" class="com.yunling.mediacenter.server.agent.PlayerResume"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="change_active_policy">
+					<bean name="updateActivePolicy"
+						class="com.yunling.mediacenter.server.agent.UpdateActivePolicy"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="latest_soft">
+					<bean name="ask_latest_software"
+						class="com.yunling.mediacenter.server.agent.AskLatestSoftware"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				<entry key="report_soft_version">
+					<bean name="report_software_version"
+						class="com.yunling.mediacenter.server.agent.ReportSoftwareVersionAction"
+						parent="agentRequestAction" />
+				</entry>
+
+
+				<entry key="response">
+					<bean name="stbResponse" class="com.yunling.mediacenter.server.agent.StbResponse"
+						parent="agentRequestAction">
+					</bean>
+				</entry>
+				
+				<entry key="perf_report">
+					<bean name="reportPerformance" class="com.yunling.mediacenter.server.agent.ReportPerformanceParams" parent="agentRequestAction">
+					</bean>
+				</entry>
+				
+				<entry key="alarm">
+					<bean name="reportWarningInfo" class="com.yunling.mediacenter.server.agent.ReportWarningInfoAction" parent="agentRequestAction"/>
+				</entry>
+				
+				<entry key="updating">
+					<bean name="updating" class="com.yunling.mediacenter.server.agent.ReportUpdatingAction" parent="agentRequestAction"></bean>
+				</entry>
+				<entry key="updated">
+					<bean name="updated" class="com.yunling.mediacenter.server.agent.ReportUpdatedAction" parent="agentRequestAction"></bean>
+				</entry>
+				<entry key="ask_weather">
+					<bean name="askWeather" class="com.yunling.mediacenter.server.agent.AskWeatherAction" parent="agentRequestAction"/>
+				</entry>
+				<entry key="update_flow_rate">
+					<bean name="updateFlowRate" class="com.yunling.mediacenter.server.agent.UpdateFlowRateAction" parent="agentRequestAction"/>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean id="allCitiesWeather" class="java.util.concurrent.ConcurrentHashMap"
+		scope="singleton">
+	</bean>
+	<bean id="updateWeatherTask" class="com.yunling.mediacenter.weather.task.UpdateWeatherTask">
+		<property name="config" ref="weatherConfig"/>
+		<property name="cityService" ref="cityService"/>
+		<property name="allCitiesWeather" ref="allCitiesWeather"/>
+	</bean>
+	<bean id="weatherConfig" class="com.yunling.mediacenter.weather.bean.WeatherConfig">
+		<property name="dataRoot">
+			<value>${weather.data_dir}</value>
+		</property>
+		<property name="ftpImageRoot">
+			<value>${weather.image_dir}</value>
+		</property>
+	</bean>
+
+</beans>

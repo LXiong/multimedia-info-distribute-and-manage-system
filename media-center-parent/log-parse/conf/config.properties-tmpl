@@ -1,0 +1,10 @@
+logBaseDir=ftp://yunling:yunling@192.168.1.114/
+
+log.base.path=stblog
+log.backup.path=backup
+log.error.path=error
+parser.thread.count=5
+
+db.version=201109191558
+db.version.check=true
+db.version.table=db_mc_version

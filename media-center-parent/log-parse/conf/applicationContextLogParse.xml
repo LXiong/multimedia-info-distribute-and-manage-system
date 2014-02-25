@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--Application context definition for PetClinic on Hibernate.-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<import resource="applicationContextBase.xml" />
+	
+	<bean id="logParse" class="com.yunling.logparse.LogParse">
+		<property name="parserThreadCount" value="${parser.thread.count}"></property>
+		<property name="macLoop" ref="macLoop" />
+		<property name="macQueue" ref="macQueue" />
+		<property name="handler" ref="macHandler" />
+	</bean>
+	
+	<bean id="macLoop" class="com.yunling.logparse.MacLoop">
+		<property name="logPath" value="${log.base.path}" />
+		<property name="macQueue" ref="macQueue"></property>
+	</bean>
+	
+	<bean id="macHandler" class="com.yunling.logparse.MacHandler">
+		<property name="backupPath" value="${log.backup.path}"></property>
+		<property name="errorPath" value="${log.error.path}"></property>
+		<property name="parserMap">
+			<map>
+				<entry key="agent." value-ref="agentLogParser"></entry>
+				<entry key="download." value-ref="downloadLogParser"></entry>
+				<entry key="play." value-ref="playLogParser"></entry>
+				<entry key="perf." value-ref="perfLogParser"></entry>
+				<entry key="mplayer_error." value-ref="mplayerror"></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="mplayerror" class="com.yunling.logparse.parers.MplayErrorParser">
+	</bean>
+	
+	<bean id="perfLogParser" class="com.yunling.logparse.parers.PerformanceParser">
+		<property name="boxPerfLogService" ref="boxPerfLogService"></property>
+	</bean> 
+	
+	<bean id="agentLogParser" class="com.yunling.logparse.parers.AgentLogParser">
+	</bean>
+	
+	<bean id="downloadLogParser" class="com.yunling.logparse.parers.DownloadLogParser">
+		<property name="boxDownLog" ref="boxDownLogService"></property>
+		<property name="boxDownStatus" ref="boxDownStatusService"></property>
+	</bean>
+	
+	<bean id="playLogParser" class="com.yunling.logparse.parers.PlayLogParser">
+		<property name="boxPlayLogService" ref="boxPlayLogService"></property>
+	</bean>
+	
+	<bean id="macQueue" class="java.util.concurrent.LinkedBlockingQueue" scope="singleton">
+	</bean>
+	
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+		<property name="beans">
+			<map>
+				<entry key="bean:name=logParseBean1" value-ref="logParseBean"></entry>
+			</map>
+		</property>
+	</bean>
+<!--	<context:mbean-export server="myMBeanServer" default-domain="myDomain"/>-->
+	
+	<bean id="logParseBean" class="com.yunling.logparse.LogParseMXBean">
+		<property name="logParse" ref="logParse" />
+	</bean>
+<!--	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">-->
+<!--		<property name="defaultDomain" value="com.yunling" />-->
+<!--	</bean>-->
+</beans>

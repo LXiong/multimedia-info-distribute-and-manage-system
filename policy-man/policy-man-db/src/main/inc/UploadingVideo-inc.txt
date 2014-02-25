@@ -1,0 +1,76 @@
+	<select id="listByUploaded" resultType="UploadingVideo" >
+		SELECT
+		  	code as code  ,
+		  	file_name as fileName  ,
+		  	origin_name as originName  ,
+		  	current_size as currentSize  ,
+		  	expected_size as expectedSize  ,
+		  	last_modified_time as lastModifiedTime  ,
+		  	uploaded as uploaded 
+		FROM uploading_videos
+		WHERE
+			uploaded = #{uploaded,jdbcType=BOOLEAN}
+			AND file_name is null
+	</select>
+	
+	<select id="countByUploaded" resultType="int" >
+		SELECT count(*) 
+		FROM uploading_videos
+		WHERE
+			uploaded = #{uploaded,jdbcType=BOOLEAN}
+			AND file_name is null
+	</select>
+	
+	<select id="listByUploadedPage" resultType="UploadingVideo" >
+		SELECT
+		  	id  ,
+		  	code  ,
+		  	fileName  ,
+		  	originName  ,
+		  	currentSize  ,
+		  	expectedSize  ,
+		  	lastModifiedTime  ,
+		  	uploaded 
+		FROM (
+			SELECT 
+				id as id  ,
+				code as code  ,
+			  	file_name as fileName  ,
+			  	origin_name as originName  ,
+			  	current_size as currentSize  ,
+			  	expected_size as expectedSize  ,
+			  	last_modified_time as lastModifiedTime  ,
+			  	uploaded as uploaded , 
+			  	ROWNUM AS R 
+			FROM uploading_videos
+			WHERE uploaded = #{uploaded,jdbcType=BOOLEAN}
+				AND file_name is null
+		)
+		<where>
+			<if test="begin &gt;= 0 and end &gt; 0">
+				and R between #{begin} and #{end}
+			</if>
+	    </where>
+	</select>
+	
+	<select id="findByFileName" resultType="UploadingVideo">
+		SELECT 
+			<include refid="selectColumns" /> 
+		FROM uploading_videos
+		WHERE origin_name = #{filename}
+	</select>
+	
+	<select id="listByCode" resultType="UploadingVideo">
+		SELECT 
+			<include refid="selectColumns" /> 
+		FROM uploading_videos
+		WHERE code = #{code}
+	</select>
+
+	<select id="findByOriginName" resultType="UploadingVideo">
+		SELECT 
+			<include refid="selectColumns" /> 
+		FROM uploading_videos
+		WHERE origin_name = #{originName}
+	</select>
+	

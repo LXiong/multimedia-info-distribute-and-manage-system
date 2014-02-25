@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="man_users" modelName="User" paged="true"
+xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="username" type="nvarchar" length="30"></key>
+	<column name="password" type="varchar" length="64" noUpdate="true" />
+	<column name="disp_name" type="nvarchar" length="64" />
+	<column name="email" type="varchar" length="100" />
+	<column name="phone" type="varchar" length="20" />
+	<column name="enabled" type="boolean" length="1" defaultValue="'1'" />
+	<column name="last_login" type="datetime" />
+	<column-group name="trackModify" />
+	
+	<default-condition>
+		<match column="username" />
+		<match column="enabled" />
+	</default-condition>
+</schema>

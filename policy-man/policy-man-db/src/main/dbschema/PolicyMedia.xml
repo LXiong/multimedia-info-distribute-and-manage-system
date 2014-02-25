@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="policy_media" modelName="PolicyMedia"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+<!-- This model is used to define play resource in a policy -->
+	<complex-key>
+		<column name="policy_id" type="number"  />
+		<column name="name" type="nvarchar" length="64" />
+	</complex-key>
+	<column name="type" type="char" length="1" />
+	<column name="content" type="nvarchar" length="200" />
+	<column name="length" type="number" />
+	<column name="play_count" type="number" />
+	
+	<result-map name="withVideo" alias="pm">
+		<association alias="v" column="content" property="video" schemaName="videos" />
+	</result-map>
+</schema>

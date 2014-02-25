@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.yunling.mediacenter.db.mapper.RoleFunctionMapper"> 
+  <delete id="delRoleFunctionByRoleId"  parameterType="java.lang.Long">
+  		delete from role_function where roleid=#{roleId}
+  </delete>
+  
+  
+  <select id="getFunctionsByRoleid" parameterType="java.lang.Long" resultType="com.yunling.mediacenter.web.Functions">
+		select distinct rf.funcid from role_function rf where roleid=#{roleId}  		
+  </select>
+		
+  <select id="getNotFunctionsByRoleid" parameterType="java.lang.Long" resultType="com.yunling.mediacenter.web.Functions">
+  		select distinct rf.funcid from role_function rf where roleid not in 
+  		(select rf.roleid from role_function rf where rf.roleid=#{roleId} )
+  </select>
+  
+  <insert id="addRoleFunction" parameterType="RoleFunction">
+			insert into role_function values(#{roleId},#{funcId})  		
+  </insert>
+</mapper>

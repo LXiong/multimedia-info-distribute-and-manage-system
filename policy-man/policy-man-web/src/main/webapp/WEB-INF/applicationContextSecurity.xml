@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		">
+	<http auto-config="true" use-expressions="true" >
+		<logout logout-url="/logout"/>
+		
+		<!-- Define URL permission start-->
+		<intercept-url pattern="/manuser" access="hasAnyRole('AUTH_USER_LIST','AUTH_USER_EDIT','AUTH_USER_DELETE')" />
+		<intercept-url pattern="/manuser/grid" access="hasAnyRole('AUTH_USER_LIST','AUTH_USER_EDIT','AUTH_USER_DELETE')" />
+		<intercept-url pattern="/manuser/save" access="hasRole('AUTH_USER_EDIT')" />
+		<intercept-url pattern="/manuser/listrole" access="hasRole('AUTH_USER_ROLE')" />
+		<intercept-url pattern="/manuser/saverole" access="hasRole('AUTH_USER_ROLE')" />
+		<intercept-url pattern="/role/*" access="hasRole('AUTH_ROLE')" />
+		
+		<!--
+	MM_ADD_AUTH('upload-man','AUTH_UPLOAD_LIST', '查看上传列表');
+	MM_ADD_AUTH('upload-man','AUTH_UPLOAD_EDIT', '修改上传文件属性');
+	MM_ADD_AUTH('upload-man','AUTH_UPLOAD_IMPORT', '入库');
+	MM_ADD_AUTH('media-man','AUTH_MEDIA_LIST', '媒体文件列表');
+	MM_ADD_AUTH('media-man','AUTH_MEDIA_EDIT', '媒体文件修改');
+	MM_ADD_AUTH('media-man','AUTH_MEDIA_DELETE', '媒体文件删除');
+		 -->
+		<intercept-url pattern="/videos/uploadinglist" access="hasRole('AUTH_UPLOAD_LIST')" />
+		<intercept-url pattern="/videos/uploadform" access="hasRole('AUTH_UPLOAD_EDIT')" />
+		<intercept-url pattern="/videos/confirmuploaded" access="hasRole('AUTH_UPLOAD_EDIT')" />
+		<intercept-url pattern="/videos/del-uploading" access="hasRole('AUTH_UPLOAD_EDIT')" />
+		<intercept-url pattern="/videos/uploadedlist" access="hasAnyRole('AUTH_UPLOAD_EDIT','AUTH_UPLOAD_LIST')" />
+		<intercept-url pattern="/videos/impt" access="hasRole('AUTH_UPLOAD_IMPORT')" />
+		<intercept-url pattern="/videos/list" access="hasRole('AUTH_MEDIA_LIST')" />
+		<intercept-url pattern="/videos/reviewlist" access="hasRole('AUTH_UPLOAD_IMPORT')" />
+		<intercept-url pattern="/video/save" access="hasAnyRole('AUTH_MEDIA_EDIT','AUTH_MEDIA_DELETE')" />
+		<intercept-url pattern="/videos/categories" access="hasRole('AUTH_MEDIA_EDIT')" />
+		<intercept-url pattern="/videoscategory/*" access="hasRole('AUTH_MEDIA_EDIT')" />
+		
+		<intercept-url pattern="/policy/list" access="hasAnyRole('AUTH_POLICY_LIST')" />
+		<!-- 
+		MM_ADD_AUTH('policy-man','AUTH_POLICY_EDIT', '播放策略修改');
+		MM_ADD_AUTH('policy-man','AUTH_POLICY_DELETE', '播放策略删除');
+		MM_ADD_AUTH('policy-man','AUTH_POLICY_AUDIT', '播放策略审核');
+		MM_ADD_AUTH('policy-man','AUTH_POLICY_DEPLOY', '播放策略发布'); 
+		 -->
+		<intercept-url pattern="/policy/new" access="hasRole('AUTH_POLICY_EDIT')" />
+		<intercept-url pattern="/policy/edit" access="hasAnyRole('AUTH_POLICY_EDIT')" />
+		<intercept-url pattern="/policy/status/rejected" access="hasAnyRole('AUTH_POLICY_EDIT')" />
+		<intercept-url pattern="/policy/status/rejected/grid" access="hasAnyRole('AUTH_POLICY_EDIT')" />
+		<intercept-url pattern="/policy/rejected" access="hasAnyRole('AUTH_POLICY_EDIT')" />		
+		<intercept-url pattern="/policy/delete" access="hasAnyRole('AUTH_POLICY_DELETE')" />
+		
+		<intercept-url pattern="/policy/status/submitted" access="hasRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/status/submitted/grid" access="hasRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/listsubmitted" access="hasRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/gridsubmitted" access="hasRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/submitted" access="hasRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/passaudit" access="hasAnyRole('AUTH_POLICY_AUDIT')" />
+		<intercept-url pattern="/policy/rejectaudit" access="hasAnyRole('AUTH_POLICY_AUDIT')" />
+		
+		<intercept-url pattern="/policy/status/passed" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/status/passed/grid" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/listpassed" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/gridpassed" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/passed" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		
+		<intercept-url pattern="/policy/status/published" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/status/published/grid" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/published" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		
+		<intercept-url pattern="/policy/publish" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		<intercept-url pattern="/policy/republish" access="hasAnyRole('AUTH_POLICY_DEPLOY')" />
+		
+		
+		
+		<intercept-url pattern="/layout" access="hasAnyRole('AUTH_POLICY_LIST','AUTH_LAYOUT_EDIT','AUTH_LAYOUT_DELETE')" />
+		<intercept-url pattern="/layout/grid" access="hasAnyRole('AUTH_POLICY_LIST','AUTH_LAYOUT_EDIT','AUTH_LAYOUT_DELETE')" />
+		<intercept-url pattern="/layout/editform" access="hasRole('AUTH_LAYOUT_EDIT')" />
+		<intercept-url pattern="/layout/save" access="hasRole('AUTH_LAYOUT_EDIT')" />
+		<intercept-url pattern="/layout/delete" access="hasRole('AUTH_MEDIA_DELETE')" />
+		<!-- Define URL permission end-->
+		
+		
+		<intercept-url pattern="/static/**" filters="none"/>
+		<intercept-url pattern="/login" filters="none"/>
+		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<form-login login-page="/login" default-target-url='/home'
+			always-use-default-target='false' authentication-failure-url="/login?login_error=1" />
+		<access-denied-handler error-page="/access_denied"/>
+	</http>
+	
+	<authentication-manager>
+		<authentication-provider user-service-ref="userDetailImpl" />
+	</authentication-manager>
+</beans:beans>

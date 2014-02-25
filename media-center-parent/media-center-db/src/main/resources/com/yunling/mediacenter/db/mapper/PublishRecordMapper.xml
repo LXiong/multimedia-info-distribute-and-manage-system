@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.PublishRecordMapper">
+	<select id="listByGroupType" resultType="PublishRecord">
+		SELECT <include refid="publishRecordColumns"/>
+		FROM publish_group
+		WHERE type_id = #{type_id}
+		ORDER BY published_at DESC
+	</select>
+	
+	<select id="getLatestOfGroupType" parameterType="java.lang.Long" resultType="PublishRecord">
+		SELECT * 
+		FROM (
+			SELECT <include refid="publishRecordColumns"/>
+			FROM publish_group
+			WHERE type_id = #{type_id}
+			ORDER BY PUBLISH_GROUP.published_at DESC
+		)
+		WHERE rownum &lt;= 2
+	</select>
+	
+	<select id="listLatest" parameterType="java.lang.Long" resultType="PublishRecord">
+		select * from (
+			select PUBLISH_GROUP.id as id,
+				PUBLISH_GROUP.policy_number as policyNumber,
+				PUBLISH_GROUP.published_at as publishedAt,
+				PUBLISH_GROUP.file_path as filePath,
+				PUBLISH_GROUP.md5 as md5,
+				PUBLISH_GROUP.policy_id as policyId,
+				PUBLISH_GROUP.type_id as typeId,
+				PUBLISH_GROUP.group_id as groupId,
+				PUBLISH_GROUP.size_bytes as sizeBytes,
+				POLICIES.start_time as startTime,
+				POLICIES.end_time as endTime,
+				POLICIES.created_at as createdAt,
+				POLICIES.updated_at as updatedAt,
+				POLICIES.name as policyName,
+				GROUPS.group_name as groupName,
+				GROUPTYPE.type_name as typeName
+			from publish_group
+			left join POLICIES on POLICIES.id = PUBLISH_GROUP.policy_id
+			left join GROUPS on GROUPS.group_id = PUBLISH_GROUP.group_id
+			left join GROUPTYPE on GROUPTYPE.type_id = PUBLISH_GROUP.type_id
+			order by PUBLISH_GROUP.policy_number desc
+		)
+		where rownum &lt;= #{num}
+	</select>
+	
+	<select id="listLatestByGroups" parameterType="java.lang.Long" resultType="PublishRecord">
+			select PUBLISH_GROUP.id as id,
+				PUBLISH_GROUP.policy_number as policyNumber,
+				PUBLISH_GROUP.published_at as publishedAt,
+				PUBLISH_GROUP.file_path as filePath,
+				PUBLISH_GROUP.md5 as md5,
+				PUBLISH_GROUP.policy_id as policyId,
+				PUBLISH_GROUP.type_id as typeId,
+				PUBLISH_GROUP.group_id as groupId,
+				PUBLISH_GROUP.size_bytes as sizeBytes,
+				POLICIES.start_time as startTime,
+				POLICIES.end_time as endTime,
+				POLICIES.created_at as createdAt,
+				POLICIES.updated_at as updatedAt,
+				POLICIES.name as policyName,
+				GROUPS.group_name as groupName,
+				GROUPTYPE.type_name as typeName
+			from publish_group
+			left join POLICIES on POLICIES.id = PUBLISH_GROUP.policy_id
+			left join GROUPS on GROUPS.group_id = PUBLISH_GROUP.group_id
+			left join GROUPTYPE on GROUPTYPE.type_id = PUBLISH_GROUP.type_id
+			where PUBLISH_GROUP.group_id = #{group_id}
+			order by PUBLISH_GROUP.policy_number desc
+	</select>
+	
+	<sql id="publishRecordColumns">
+		PUBLISH_GROUP.id as id,
+		PUBLISH_GROUP.policy_number as policyNumber,
+		PUBLISH_GROUP.published_at as publishedAt,
+		PUBLISH_GROUP.file_path as filePath,
+		PUBLISH_GROUP.md5 as md5,
+		PUBLISH_GROUP.policy_id as policyId,
+		PUBLISH_GROUP.type_id as typeId,
+		PUBLISH_GROUP.group_id as groupId,
+		PUBLISH_GROUP.size_bytes as sizeBytes
+	</sql>
+</mapper>

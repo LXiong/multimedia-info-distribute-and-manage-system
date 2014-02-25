@@ -1,0 +1,81 @@
+<configuration>
+	 <substitutionProperty name="log.base" value="." />
+	 
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder> <!-- <layout class="ch.qos.logback.classic.PatternLayout"> -->
+			<Pattern>%date [%2thread] %-5level %logger{35} - %msg %n</Pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="upload_log"
+	class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>upload.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${log.base}/upload-%d{yyyy-MM-dd}-%i.log.gz</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>3</MaxIndex>
+		</rollingPolicy>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}/upload-%d{yyyy-MM-dd}-%i.log
+			</FileNamePattern>
+			<MaxHistory>10</MaxHistory>
+			<TimeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<MaxFileSize>2MB</MaxFileSize>
+			</TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<!-- <layout class="ch.qos.logback.classic.PatternLayout"> -->
+		<encoder>
+			<Pattern>%date [%2thread] %-5level %logger{35} - %msg %n</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>test.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>tests.%i.log.zip</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>3</MaxIndex>
+		</rollingPolicy>
+
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>3MB</MaxFileSize>
+		</triggeringPolicy>
+		<!-- <layout class="ch.qos.logback.classic.PatternLayout"> -->
+		<encoder>
+			<Pattern>%date [%2thread] %-5level %logger{35} - %msg %n
+			</Pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.apache.commons" level="ERROR">
+	</logger>
+	
+	<logger name="org.apache.mybatis" level="ERROR">
+	</logger>
+	<logger name="org.mybatis.spring" level="ERROR">
+	</logger>
+	
+	<logger name="org.springframework" level="ERROR">
+	</logger>
+	
+	<logger name="ch.qos.logback" level="ERROR">
+	</logger>
+	<logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="ERROR">
+	</logger>
+	<logger name="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" level="ERROR">
+	</logger>
+	<logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level="ERROR">
+	</logger>
+	
+	<logger name="com.yunling" level="DEBUG">
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="upload_log" />
+	</root>
+</configuration>
+

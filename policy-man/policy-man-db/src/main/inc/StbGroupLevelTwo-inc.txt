@@ -1,0 +1,5 @@
+	<select id="listByGroupType" resultType="StbGroupLevelTwo" parameterType="StbGroup">
+		SELECT <include refid="selectColumns"/>
+		FROM groups
+		WHERE type_id = #{typeId}
+	</select>

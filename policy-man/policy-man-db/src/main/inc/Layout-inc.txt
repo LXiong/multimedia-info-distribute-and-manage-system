@@ -1,0 +1,31 @@
+	<select id="listWithArea" resultMap="withArea">
+		SELECT 
+		  <include refid="withArea_columns"/>
+		FROM
+		  layout LEFT JOIN area on area.layoutid=layout.id
+		<where>
+			<if test="layout &gt; 0">layout.id=#{layoutid}</if>
+		</where>
+	</select>
+	<select id="getWithArea" resultMap="withArea">
+		SELECT 
+		  <include refid="withArea_columns"/>
+		FROM
+		  layout LEFT JOIN area on area.layoutid=layout.id
+		WHERE layout.id=#{layout_id}
+	</select>
+	
+	<!-- select some columns only for select layout -->
+	<select id="listCountAreaPaged" resultType="Layout" >
+	SELECT * FROM (
+	SELECT t.*, rownum as rn FROM (
+		SELECT
+		  layout.id as id  ,
+		  layout.name as name  ,
+		  count(area.id) as areaCount
+		FROM layout left join area on layout.id=area.layoutid
+		GROUP BY
+		  layout.id, layout.name
+	) t WHERE rownum &lt;= #{end}
+	) WHERE rn &gt;=#{begin}
+	</select>

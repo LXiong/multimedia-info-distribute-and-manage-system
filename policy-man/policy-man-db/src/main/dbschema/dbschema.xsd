@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.dwangel.com/dbschema"
+	xmlns="http://www.dwangel.com/dbschema" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:element name="schema">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element ref="key" />
+				<xsd:element ref="complex-key" />
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="column" />
+				<xsd:element ref="column-group" />
+				<xsd:element ref="default-condition" />
+				<xsd:element ref="default-order-by-set" />
+				<xsd:element ref="result-map" />
+				<xsd:element ref="disabled" />
+				<xsd:element ref="alias" />
+				<xsd:element ref="aliasColumns" />
+			</xsd:choice>
+		</xsd:sequence>
+		
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The unique name of a model schema. If the table name is not definded, used as database table name.
+					]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="modelName" type="xsd:string">
+			<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The unique name of the model Java class.
+					]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="tableName" type="xsd:string">
+			<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The unique name of the model Java class.
+					]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		
+		<xsd:attribute name="paged" type="xsd:boolean">
+			<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	Whether use pagination.
+					]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:element>
+
+	<xsd:simpleType name="generatorChoice">
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="native"/>
+			<xsd:enumeration value="sequence"/>
+			<xsd:enumeration value="uuid"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+<xsd:element name="key">
+	<xsd:complexType>
+		<xsd:complexContent>
+			<xsd:extension base="columnDef">
+				<xsd:attribute name="generator"  type="generatorChoice">
+					<xsd:annotation>
+							<xsd:documentation><![CDATA[
+   This attribute defines how to generate a key. The choice is native, sequence, uuid. Currently only sequence is supported.
+							]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="complex-key">
+	<xsd:complexType>
+		<xsd:choice minOccurs="1" maxOccurs="unbounded">
+			<xsd:element ref="column" />
+		</xsd:choice>
+	</xsd:complexType>
+</xsd:element>
+
+	<xsd:complexType name="columnDef">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="type" type="xsd:string" use="required"/>
+		<xsd:attribute name="length" type="xsd:integer"/>
+		<xsd:attribute name="noUpdate" type="xsd:boolean"/>
+		<xsd:attribute name="defaultValue" type="xsd:string"/>
+		<xsd:attribute name="updateValue" type="xsd:string"/>
+		<xsd:attribute name="insertValue" type="xsd:string"/>
+	</xsd:complexType>
+<xsd:element name="column" type="columnDef" />
+
+<xsd:element name="column-group">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+	<xsd:complexType name="searchConditionType">
+		<xsd:attribute name="column" type="xsd:string"  />
+		<xsd:attribute name="value" type="xsd:string"  />
+		<xsd:attribute name="low" type="xsd:string"  />
+		<xsd:attribute name="high" type="xsd:string" />
+	</xsd:complexType>
+	<xsd:complexType name="orderBy">
+		<xsd:attribute name="column" type="xsd:string" />
+		<xsd:attribute name="asc" type="xsd:boolean" />
+	</xsd:complexType>
+	
+<xsd:element name="default-condition">
+	<xsd:complexType >
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="match" />
+				<xsd:element ref="match-value" />
+				<xsd:element ref="like" />
+				<xsd:element ref="between" />
+				<xsd:element ref="order-by" />
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+	<xsd:element name="match" type="searchConditionType" />
+	<xsd:element name="match-value" type="searchConditionType" />
+	<xsd:element name="like" type="searchConditionType" />
+	<xsd:element name="between" type="searchConditionType"/>
+	<xsd:element name="order-by" type="orderBy"/>
+
+<xsd:element name="default-order-by-set">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element ref="order-by"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+	<xsd:complexType name="relatedCollection">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="collection" />
+			<xsd:element ref="association" />
+		</xsd:choice>
+		<xsd:attribute name="schemaName" type="xsd:string" />
+		<xsd:attribute name="alias" type="xsd:string" />
+		<xsd:attribute name="property" type="xsd:string" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="relatedAssoc">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="collection" />
+			<xsd:element ref="association" />
+		</xsd:choice>
+		<xsd:attribute name="schemaName" type="xsd:string" />
+		<xsd:attribute name="alias" type="xsd:string" />
+		<xsd:attribute name="property" type="xsd:string" />
+		<xsd:attribute name="column" type="xsd:string" />
+	</xsd:complexType>
+<xsd:element name="result-map">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="collection" />
+			<xsd:element ref="association" />
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" />
+		<xsd:attribute name="alias" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+	<xsd:element name="collection" type="relatedCollection"></xsd:element>
+	<xsd:element name="association" type="relatedAssoc"></xsd:element>
+	
+<xsd:element name="disabled">
+	<xsd:complexType>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element ref="method" />
+		</xsd:choice>
+	</xsd:complexType>
+</xsd:element>
+	<xsd:element name="method" />
+	
+<xsd:element name="alias">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="aliasColumns">
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="description">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+Contains informative text describing the purpose of the enclosing element.
+		]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

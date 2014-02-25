@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="area" modelName="Area"
+	xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native"></key>	
+		<column name="layoutid" type="number"  />
+		<column name="name" type="varchar"  length="100" />
+		<column name="lcomment" type="varchar" length="200"  />
+		<!--
+		<option value="1">视频</option>
+		<option value="2">图片</option>
+		<option value="3">文字</option>
+		<option value="4">时间</option>
+		<option value="5">天气</option> 
+		 -->
+		<column name="type" type="varchar" length="2" />
+		<column name="left" type="number" />
+		<column name="top" type="number" />
+		<column name="height" type="number" />
+		<column name="width" type="number" />
+		<column name="zindex" type="number" />
+		
+		<column name="time_format" type="varchar" length="50"/>
+		
+		<alias name="area"/>
+</schema>

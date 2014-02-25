@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.ConfigDownLoadLogMapper">
+	<insert id="addConfigDownLoadLog" parameterType="ConfigDownLoadLog">
+			insert into config_download_log 
+			(USERID, DOWNLOADITEM, DOWNLOADTIME)
+			values(#{userId},#{downloaditem},#{downloadtime})
+	</insert>
+	
+	<select id="selectConfigDownLoadLogCount" resultType="java.lang.Integer">
+			select count(*) from config_download_log      
+	</select>
+	
+	<select id="list"  resultType="ConfigDownLoadLog" parameterType="map" >
+		select USERNAME, DOWNLOADITEM, DOWNLOADTIME, rn from (
+			SELECT a.*, rownum as rn FROM (
+				SELECT * 
+				FROM config_download_log 
+				left join users on users.userid = config_download_log.USERID
+				ORDER BY downloadtime DESC
+			) a WHERE rownum &lt;= #{end}
+		) a where rn &gt;= #{begin}
+<!--		select * from (select row_number()over(order by downloadtime desc) r,u.* from config_download_log u ) where r between #{begin} and #{end} -->
+	</select>
+</mapper>

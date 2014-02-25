@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.WatcherReportRecordMapper">
+	<insert id="insertRecord">
+		insert into AUTH_WATCH_LOG
+		(ID, STB_MAC, STB_IP, STB_PORT, WATCH_IP, WATCH_PORT,
+		CREATED_AT)
+		values (AUTH_WATCH_LOG_ID.nextVal, #{mac}, #{stbIp}, #{stbPort}, 
+		#{watchIp}, #{watchPort}, sysdate)
+	</insert>
+	<select id="getLogs" parameterType="map" resultType="WatcherReportRecord">
+		select * from (
+			select STB_IP as stbIp, 
+				STB_PORT as stbPort,
+				STB_MAC as mac, 
+				WATCH_IP as watchIp,
+				WATCH_PORT as watchPort,
+				CREATED_AT as createdAt,
+				row_number() over(order by CREATED_AT desc) as R 
+			from AUTH_WATCH_LOG
+			where 1=1
+			<if test="watcherReportRecord.mac != null and watcherReportRecord.mac != ''">
+				AND STB_MAC like #{watcherReportRecord.mac} 
+			</if>
+			<if test="from != null and from != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+			</if>
+			<if test="to != null and to != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+			</if>
+		)
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="count" resultType="Count">
+		select count(*) as counts
+		from AUTH_WATCH_LOG
+		where 1 = 1
+		<if test="watcherReportRecord.mac != null and watcherReportRecord.mac != ''">
+			AND STB_MAC like #{watcherReportRecord.mac} 
+		</if>
+		<if test="from != null and from != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+		</if>
+		<if test="to != null and to != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+		</if>
+	</select>
+</mapper>

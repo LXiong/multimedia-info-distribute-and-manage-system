@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.GroupTypeMapper">
+	<select id="getTypeList" resultType="GroupType">
+		select distinct type.type_id as typeId, 
+			type.type_name as typeName, 
+			type.type_description as typeDescription 
+		from GROUPTYPE type
+			left join USER_STB us on us.typeid = type.type_id
+		where 1 = 1
+		<if test="userId != 1L">
+			AND US.USERID = #{userId} 
+			AND US.TYPEFLAG = 4
+		</if>
+	</select>
+	
+	<resultMap type="GroupType" id="withChild">
+		<result column="typeId" property="typeId"/>
+		<result column="typeName" property="typeName"/>
+		<result column="typeDescription" property="typeDescription"/>
+		<collection property="groups" ofType="Groups">
+			<result column="gr_group_id" property="groupId" />
+			<result column="gr_group_name" property="groupName" />
+			<result column="gr_group_desc" property="groupDescription" />
+		</collection>
+	</resultMap>
+	
+	<select id="listWithChild" resultMap="withChild">
+		SELECT distinct type.type_id as typeId,
+			type.type_name as typeName,
+			type.type_description as typeDescription,
+			gr.group_id as gr_group_id,
+			gr.group_name as gr_group_name,
+			gr.group_description as gr_group_desc
+		FROM GROUPTYPE type
+			LEFT JOIN groups gr on type.type_id = gr.type_id
+			LEFT JOIN USER_STB us on us.typeid = type.type_id and us.typeflag=4
+			LEFT JOIN USER_STB us2 on gr.group_id is not null and gr.group_id =	us2.typeid and us2.typeflag=5
+		WHERE us.userid=#{userId} OR us2.userid=#{userId}
+		ORDER BY type.type_id
+	</select>
+	
+	<select id="getGroupType" resultType="GroupType">
+		select type_id as typeId, type_name as typeName, type_description as typeDescription 
+		from GROUPTYPE 
+		where 1 = 1
+		<if test="typeName != null and typeName != ''">
+			AND type_name = #{typeName }
+		</if>
+		<if test="typeId != 0L and typeId != null and typeId != ''">
+			AND type_id = #{typeId }
+		</if>
+	</select>
+	
+	<insert id="addGroupType" parameterType="GroupType">
+		<selectKey keyProperty="typeId" order="BEFORE" resultType="java.lang.Long">
+			select GROUPTYPE_SEQ.nextval from dual
+		</selectKey>
+		insert into GROUPTYPE(type_id, type_name, type_description)
+		values(#{typeId}, #{typeName}, #{typeDescription})
+	</insert>
+	<delete id="deleteGroupType"  parameterType="GroupType">
+		delete from GROUPTYPE 
+		where type_id = #{typeId}
+	</delete>
+	<update id="update" parameterType="GroupType">
+		update GROUPTYPE set 
+		<if test="typeName != null and typeName != ''">
+			type_name = #{typeName}, 
+		</if>
+		<if test="typeDescription != null and typeDescription != ''">
+			type_description = #{typeDescription}, 
+		</if>
+		type_id = #{typeId} 
+		where type_id = #{typeId}
+	</update>
+</mapper>

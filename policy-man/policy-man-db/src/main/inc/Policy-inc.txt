@@ -1,0 +1,135 @@
+	<update id="setSubmitted">
+		UPDATE policies
+		SET status='submitted', submit_by =#{user_name} , submit_at = SYSDATE
+		WHERE id=#{policy_id} AND status='normal'
+	</update>
+	
+	<update id="setPassed">
+		UPDATE policies
+		SET status='passed' , audit_by =#{user_name} , audit_at=SYSDATE
+		WHERE id=#{policy_id} AND status='submitted'
+	</update>
+	
+	<update id="setPublished">
+		UPDATE policies
+		SET status='published' , published_by =#{user_name} , published_at=SYSDATE
+		WHERE id=#{policy_id} AND status='passed'
+	</update>
+	
+	<update id="rejectPolicy">
+		UPDATE policies
+		SET status='rejected' , rejected_by =#{user_name}, rejected_at= SYSDATE , reason=#{reason}
+		WHERE id=#{policy_id} AND status in('submitted', 'passed')
+	</update>
+	
+	<select id="listEditablePaged" resultType="Policy" >
+	SELECT * FROM (
+	SELECT t.*, rownum as rn FROM (
+		SELECT
+		  id as id  ,
+		  name as name  ,
+		  comments as comments  ,
+		  start_time as startTime  ,
+		  end_time as endTime  ,
+		  status as status  ,
+		  created_at as createdAt  ,
+		  created_by as createdBy  ,
+		  updated_at as updatedAt  ,
+		  updated_by as updatedBy  ,
+		  submit_at as submitAt  ,
+		  submit_by as submitBy  ,
+		  rejected_at as rejectedAt  ,
+		  rejected_by as rejectedBy  ,
+		  audit_at as auditAt  ,
+		  audit_by as auditBy 
+		FROM policies
+		WHERE status='normal' OR status='rejected'
+		ORDER BY id DESC
+	) t WHERE rownum &lt;= #{end}
+	) WHERE rn &gt;=#{begin} ORDER BY id DESC
+	</select>
+	
+	<select id="listPassedPaged" resultType="Policy" >
+	SELECT * FROM (
+	SELECT t.*, rownum as rn FROM (
+		SELECT
+		  id as id  ,
+		  name as name  ,
+		  comments as comments  ,
+		  start_time as startTime  ,
+		  end_time as endTime  ,
+		  status as status  ,
+		  created_at as createdAt  ,
+		  created_by as createdBy  ,
+		  updated_at as updatedAt  ,
+		  updated_by as updatedBy  ,
+		  submit_at as submitAt  ,
+		  submit_by as submitBy  ,
+		  rejected_at as rejectedAt  ,
+		  rejected_by as rejectedBy  ,
+		  audit_at as auditAt  ,
+		  audit_by as auditBy 
+		FROM policies
+		WHERE status='passed'
+		ORDER BY audit_at DESC, start_time desc, end_time desc 
+	) t WHERE rownum &lt;= #{end}
+	) WHERE rn &gt;=#{begin}
+	</select>
+	
+	<select id="listSubmittedPaged" resultType="Policy" >
+	SELECT * FROM (
+	SELECT t.*, rownum as rn FROM (
+		SELECT
+		  id as id  ,
+		  name as name  ,
+		  comments as comments  ,
+		  start_time as startTime  ,
+		  end_time as endTime  ,
+		  status as status  ,
+		  created_at as createdAt  ,
+		  created_by as createdBy  ,
+		  updated_at as updatedAt  ,
+		  updated_by as updatedBy  ,
+		  submit_at as submitAt  ,
+		  submit_by as submitBy  ,
+		  rejected_at as rejectedAt  ,
+		  rejected_by as rejectedBy  ,
+		  audit_at as auditAt  ,
+		  audit_by as auditBy 
+		FROM policies
+		WHERE status='submitted'
+		ORDER BY submit_at DESC
+	) t WHERE rownum &lt;= #{end}
+	) WHERE rn &gt;=#{begin}
+	</select>
+	
+	<select id="listByStatus" resultType="Policy" >
+		SELECT
+		  id as id  ,
+		  name as name  ,
+		  comments as comments  ,
+		  start_time as startTime  ,
+		  end_time as endTime  ,
+		  status as status  ,
+		  created_at as createdAt  ,
+		  created_by as createdBy  ,
+		  updated_at as updatedAt  ,
+		  updated_by as updatedBy  ,
+		  submit_at as submitAt  ,
+		  submit_by as submitBy  ,
+		  rejected_at as rejectedAt  ,
+		  rejected_by as rejectedBy  ,
+		  audit_at as auditAt  ,
+		  audit_by as auditBy ,
+		  published_at as publishedAt,
+		  published_by as publishedBy
+		FROM policies
+		WHERE status=#{status}
+		ORDER BY submit_at DESC
+	</select>
+	
+	<select id="countStatus" parameterType="Policy" resultType="java.lang.Integer">
+		SELECT COUNT(*) as total 
+		FROM policies 
+		WHERE status = #{status}
+	</select>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+			
+	<bean id="mybatisEnv" class="org.apache.ibatis.mapping.Environment">
+		<constructor-arg value="development"/>
+		<constructor-arg><bean class="org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory"/></constructor-arg>
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
+	<bean id="myBatisBuilder" class="com.yunling.commons.mybatis.MyBatisBuilder">
+		<property name="environment" ref="mybatisEnv" />
+		<property name="mapperPackage" value="com.yunling.mediacenter.db.mapper" />
+		<property name="modelPackage" value="com.yunling.mediacenter.db.model" />
+		<property name="typeHandlers">
+			<map>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="sessionFactory" factory-bean="myBatisBuilder" factory-method="getFactory">
+	</bean>
+	
+	<bean id="dbTmpl" class="com.yunling.commons.mybatis.MyBatis3Template">
+		<property name="factory" ref="sessionFactory" />
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sessionFactory"></constructor-arg>
+	</bean>
+</beans>

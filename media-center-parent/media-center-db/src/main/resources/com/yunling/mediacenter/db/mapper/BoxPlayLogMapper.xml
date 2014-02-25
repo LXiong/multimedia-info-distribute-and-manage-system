@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.BoxPlayLogMapper">
+	<insert id="add" parameterType="BoxPlayLog">
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+			select seq_playlog.nextval from dual
+			</selectKey>
+		insert into boxplaylog
+		(ID, MAC, LOGTIME, VIDEONAME, POLICYNUMBER)
+		values(#{id},#{mac},#{logTime},#{videoName},#{policyNumber})
+	</insert>
+	<!-- Add by L.J. on 7/26/2011 -->
+	<select id="countList" resultType="int">
+		select count(*) from 
+		(select videoname,count(videoname) as count 
+		from boxplaylog 
+		where mac in (select stb_mac from stb where group_id = #{groupId})
+		group by videoname)
+	</select>
+	<!-- Edit by L.J. on 7/26/2011 -->
+	<select id="list" resultType="Statistics" parameterType="map">
+		select videoname, count from 
+		(select videoname, count, rownum as r from
+		(select videoname,count(videoname) as count
+		from boxplaylog 
+		where mac in (select stb_mac from stb where group_id =#{groupId})
+		<if test="startDate!=null and startDate !='' ">
+			and logtime &gt;= #{startDate}
+				</if>
+		<if test="endDate!=null and endDate!=''">
+			and logtime &lt;= #{endDate}
+				</if>
+		group by videoname))
+		where r between #{begin} and #{end}
+	</select>
+	<!-- add by L.J. on 6/16/2011 -->
+	<sql id="condition">
+		<where>
+			<!-- <choose>
+				<when test="beginTime != null and endTime != null">
+					AND
+					to_char(logtime,'yyyy-MM-dd') BETWEEN #{beginTime} and #{endTime}
+				</when>
+				<when test="beginTime != null">
+					AND to_char(logtime,'yyyy-MM-dd') &gt;= #{beginTime}
+				</when>
+				<when test="endTime != null">
+					AND to_char(logtime,'yyyy-MM-dd') &lt;= #{endTime}
+				</when>
+			</choose> -->
+			<if test="beginTime != null and beginTime != ''">
+				AND to_char(logtime, 'yyyy-MM-dd') &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND to_char(logtime, 'yyyy-MM-dd') &lt;= #{endTime}
+			</if>
+			<if test="mac != null and mac != ''">
+				and mac like #{mac}
+			</if>
+			<if test="mediaType != null and mediaType != ''">
+				and media_type = #{mediaType}
+			</if>
+		</where>
+	</sql>
+	<select id="countBy" parameterType="map" resultType="int">
+		select count(*) from 
+		boxplaylog
+		join videos on boxplaylog.videoname = videos.file_name
+		<include refid="condition"></include>
+	</select>
+	<select id="getPlayHistReport" parameterType="map" resultType="BoxPlayLog">
+		select mac, logtime, videoname, origin_name as originname, name from
+		(select mac, logtime, videoname, origin_name, name, media_type, rownum as r 
+			from (select mac, logtime, videoname, origin_name, name, media_type
+				from boxplaylog
+				join videos on boxplaylog.videoname = videos.file_name
+				<include refid="condition"></include>
+				order by mac, logtime desc
+			)
+		)
+		where r between #{begin} and #{end}
+	</select>
+	<!-- create by L.J. on 8/25/2011 -->
+	<select id="getAllPlayHistReport" parameterType="map" resultType="BoxPlayLog">
+		select mac, logtime, videoname, origin_name, name
+		from boxplaylog
+		join videos on boxplaylog.videoname = videos.file_name
+		<include refid="condition"></include>
+		order by mac, logtime desc
+	</select>
+	<select id="countBy2" parameterType="map" resultType="int">
+		select count(*) 
+		from(
+		select mac, videoname, count(*) as times from boxplaylog 
+		join videos on boxplaylog.videoname = videos.file_name
+		where 1=1
+			<if test="beginTime != null and beginTime != ''">
+				AND to_char(logtime, 'yyyy-MM-dd') &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND to_char(logtime, 'yyyy-MM-dd') &lt;= #{endTime}
+			</if>
+			<if test="mac != null and mac != ''">
+				and mac like #{mac}
+			</if>
+			<if test="name != null and name != ''">
+				and name like #{name}
+			</if>
+		group by mac, videoname 
+		)
+	</select>
+	<select id="playTimesReport" parameterType="map" resultType="VideoPlayTimes">
+		select mac, videoname, origin_name as originname, name, times 
+		from(select mac, videoname, origin_name, name, times, rownum as r
+		from(
+			select mac, videoname, count(*) as times from boxplaylog 
+			<include refid="condition"></include>
+			group by mac, videoname 
+			order by mac, videoname
+		) tmp join videos on tmp.videoname = videos.file_name
+		)
+		where r between #{begin} and #{end}
+		<if test="name != null and name != ''">
+			and name like #{name}
+		</if>
+	</select>
+	<!-- create by L.J. on 8/25/2011 -->
+	<select id="getAllPlayTimesReport" parameterType="map" resultType="VideoPlayTimes">
+		select mac, videoname, origin_name, name, times
+		from(
+			select mac, videoname, count(*) as times from boxplaylog 
+			<include refid="condition"></include>
+			group by mac, videoname 
+			order by mac, videoname
+		) tmp join videos on tmp.videoname = videos.file_name
+	</select>
+</mapper>

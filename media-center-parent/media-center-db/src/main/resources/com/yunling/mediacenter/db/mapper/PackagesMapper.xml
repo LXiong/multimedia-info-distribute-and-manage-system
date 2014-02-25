@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.PackagesMapper">
+	<select id="packageList" resultType="Packages" >
+		select id, version, name, illustrate, create_time as createTime,
+			update_time as updateTime
+		from packages
+	</select>
+	<delete id="delByVersion" parameterType="String" >
+		delete from packages
+		where version = #{version }
+	</delete>
+	<insert id="createPkg" parameterType="Packages" >
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+			select PACKAGES_ID.nextval from dual
+		</selectKey>
+		insert into packages(id, version, name, illustrate, create_time, update_time)
+		values(#{id}, #{version,jdbcType=VARCHAR }, #{name,jdbcType=VARCHAR }, 
+			#{illustrate,jdbcType=VARCHAR }, sysdate, #{updateTime})
+	</insert>
+	<update id="updatePkg" parameterType="Packages">
+		update packages set name = #{name }, illustrate = #{illustrate }, 
+			update_time = #{updateTime}
+		where version = #{version }
+	</update>
+	<select id="getPkgByVersion" resultType="Packages">
+		select version, name, illustrate, create_time as createTime,
+			update_time as updateTime
+		from packages
+		where version = #{version,jdbcType=VARCHAR }
+	</select>
+	<select id="getPackageById" resultType="Packages">
+		select id, version, name, illustrate, create_time as createTime,
+			update_time as updateTime
+		from packages
+		where id = #{id }
+	</select>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.DistrictMapper">
+	<select id="findByCityId" resultType="District">
+		select district_id as districtId, district_name as districtName from DISTRICT 
+		where city_id = #{cityId}
+	</select>
+	<select id="findByDistrictName" resultType="District">
+		select district_id as districtId, district_name as districtName from DISTRICT 
+		where district_name = #{districtName}
+			and city_id = #{cityId}
+	</select>
+</mapper>

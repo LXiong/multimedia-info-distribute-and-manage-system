@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.GroupsMapper">
+	<select id="getGroupList" resultType="Groups">
+		select distinct
+			GROUPS.group_id as groupId, 
+			GROUPS.group_name as groupName, 
+			GROUPS.type_id as typeId, 
+			GROUPS.group_description as groupDescription, 
+			GROUPS.conf_id as confId,
+			CONF.conf_name as confName
+		from GROUPS
+			left join CONF on CONF.conf_id = GROUPS.conf_id
+			left join USER_STB us on us.typeid = GROUPS.type_id or us.typeid = GROUPS.group_id
+		where 1 = 1
+			<if test="groups.confId != null and groups.confId != '' and groups.confId != 0L">
+				and GROUPS.conf_id = #{groups.confId}
+			</if>
+			<if test="userId != 1L">
+				AND US.USERID = #{userId} 
+				<!--AND US.TYPEFLAG = 5-->
+			</if>
+	</select>
+	<select id="getGroup" resultType="Groups">
+		select group_id as groupId, 
+			group_name as groupName, 
+			type_id as typeId, 
+			group_description as groupDescription 
+		from GROUPS 
+		where 1=1 
+			<if test="groupId != null and groupId != '' and groupId != 0L">
+				AND GROUPS.group_id = #{groupId } 
+			</if>
+			<if test="typeId != null and typeId != '' and typeId != 0L">
+				AND GROUPS.type_id = #{typeId }
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND GROUPS.group_name = #{groupName } 
+			</if>
+	</select>
+	<insert id="addGroups" parameterType="Groups">
+		<selectKey keyProperty="groupId" order="BEFORE" resultType="java.lang.Long">
+			select GROUPS_SEQ.nextval from dual
+		</selectKey>
+		insert into GROUPS(group_id, group_name, type_id, group_description)
+		values(#{groupId }, #{groupName }, #{typeId }, #{groupDescription })
+	</insert>
+	<select id="getGroupListByType" resultType="Groups">
+		select group_id as groupId, group_name as groupName, type_id as typeId, 
+			group_description as groupDescription 
+		from GROUPS
+		where type_id = #{typeId }
+	</select>
+	<delete id="deleteGroup"  parameterType="Groups">
+		delete from GROUPS
+		where group_id = #{groupId}
+	</delete>
+	<update id="update" parameterType="Groups">
+		update GROUPS set 
+		<if test="groupName != null and groupName != ''">
+			group_name = #{groupName,jdbcType=VARCHAR}, 
+		</if>
+		<if test="groupDescription != null and groupDescription != ''">
+			group_description = #{groupDescription,jdbcType=VARCHAR}, 
+		</if>
+		<if test="confId != 0L and confId != null and confId != ''">
+			conf_id = #{confId}, 
+		</if>
+		<if test="packageId !=0L and packageId != null and packageId != ''">
+			PACKAGEID = #{packageId},
+		</if>
+			group_id = #{groupId}
+		where group_id = #{groupId}
+	</update>
+</mapper>

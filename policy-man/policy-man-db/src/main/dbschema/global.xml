@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<global databaseType="oracle"
+xmlns="http://www.dwangel.com/global" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.dwangel.com/global global.xsd"
+>
+	<types>
+		<type-def name="char" javaType="java.lang.String" dbType="CHAR" jdbcType="CHAR" needLength="true" />
+		<type-def name="nchar" javaType="java.lang.String" dbType="NCHAR" jdbcType="NCHAR" needLength="true" />
+		<type-def name="varchar" javaType="java.lang.String" dbType="VARCHAR2" jdbcType="VARCHAR" needLength="true" />
+		<type-def name="nvarchar" javaType="java.lang.String" dbType="NVARCHAR2" jdbcType="VARCHAR" needLength="true" />
+		<type-def name="datetime" javaType="java.util.Date" dbType="DATE" jdbcType="TIMESTAMP" />
+		<type-def name="number" javaType="java.lang.Long" dbType="NUMBER" jdbcType="NUMERIC" />
+		<type-def name="int" javaType="java.lang.Integer" dbType="INTEGER" jdbcType="INTEGER" />
+		<type-def name="long" javaType="java.lang.Long" dbType="NUMBER" jdbcType="NUMERIC" />
+		<type-def name="boolean" javaType="java.lang.Boolean" dbType="CHAR" jdbcType="CHAR" needLength="true"/>
+	</types>
+	
+	<column-group name="trackModify">
+		<column name="creator" type="nvarchar" length="30" noUpdate="true"/>
+		<column name="created_at" type="datetime" insertValue="sysdate" noUpdate="true"/>
+		<column name="updator" type="nvarchar" length="30" />
+		<column name="updated_at" type="datetime" insertValue="sysdate" updateValue="sysdate"/>
+	</column-group>
+	
+</global>

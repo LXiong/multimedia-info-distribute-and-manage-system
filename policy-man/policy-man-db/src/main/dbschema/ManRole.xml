@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="man_roles" modelName="Role" paged="true"
+xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native"></key>
+	<column name="name" type="nvarchar" length="30" />
+	<column name="description" type="nvarchar" length="100" />
+	<column name="enabled" type="boolean" length="1" defaultValue="'1'"/>
+	<column-group name="trackModify" />
+	
+	<default-condition>
+		<match column="id" />
+		<match column="enabled" />
+	</default-condition>
+</schema>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.StbSoftwareVersionMapper">
+	<insert id="insertRecord">
+		insert into STB_SOFT_VERSION (MAC, TYPE, VERSION)
+		values (#{mac}, #{type}, #{version})
+	</insert>
+	<update id="updateRecord">
+		update STB_SOFT_VERSION set version = #{version}
+		where mac =
+		#{mac} and type = #{type}
+	</update>
+	<select id="selectRecord" resultType="StbSoftwareVersion">
+		select * from
+		STB_SOFT_VERSION
+		where mac =
+		#{mac} and type = #{type}
+	</select>
+</mapper>

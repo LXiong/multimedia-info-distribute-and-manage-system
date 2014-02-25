@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="stbGroupLevelTwo" modelName="StbGroupLevelTwo" tableName="GROUPS" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="group_id" type="number"></key>
+	<column name="group_name" type="varchar" length="50"/>
+	<column name="type_id" type="number"/>
+	<column name="group_description" type="varchar" length="200" />
+	<column name="conf_id" type="number"/>
+	<column name="packageid" type="number"/>
+	
+	<alias name="sgt"/>
+</schema>

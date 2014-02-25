@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus nameSpace="/">
+	<menu name="Home" action="home"></menu>
+	<menu name="StbManage" action="stb" function="CustomerDeviceEdit,CustomerDeviceView,CustomerDeviceManage">
+		<menu name="Stb" action="stb">
+		</menu>
+		<menu name="group.manage" action="group" function="CustomerDeviceEdit,CustomerDeviceManage"></menu>
+		<menu name="Audit" action="audit" function="CustomerDeviceManage"/>
+		<menu name="Upload" action="upload" function="CustomerDeviceEdit,CustomerDeviceManage">
+			<menu name="Upload.result" action="upload" method="uploadFile"></menu>
+		</menu>
+		<menu name="Statistics" action="stb" method="statistics" />
+		<menu name="PolicyStatistics" action="stat" />
+		<menu name="InstantMessage.action" action="instant-message"></menu>
+		<menu name="InstantMessage.histories" action="instant-message" method="histroies">
+			<menu name="InstantMessage.histories" action="instant-message" method="show"></menu>
+			<menu name="InstantMessage.histories" action="instant-message" method="terminals"></menu>
+		</menu>
+		<!-- <menu name="stream.action" action="stream"></menu> -->
+	</menu>
+	<menu name="usb.deploy" function="UsbDeploy" action="usb" method="time">
+		<menu name="usb.time" action="usb" method="time"></menu>
+		<menu name="usb.config" action="usb" method="config">
+			<menu name="Config.content" action="usb" method="confContent"></menu>
+		</menu>
+		<menu name="Config" action="conf" function="CustomerDeviceManage">
+			<menu name="Config.add" action="config" method="getProperty"></menu>
+			<menu name="Config.content" action="config" method="confContent"></menu>
+		</menu>
+	</menu>
+	<menu name="Policy" action="policy" >
+		<menu name="PolicyStatus" key="policy.status" action="policy">
+			<menu name="policy.detail" action="policy" method="detail" >
+				<menu name="policy.media.download.status" action="policy-download-status" method="mediaDownStatus"></menu>
+			</menu>
+			<menu name="policy.media.download.status" action="policy-download-status" ></menu>
+		</menu>		
+	</menu>
+	
+	<menu name="admin.user" action="user" function="CustomerUserAdmin">
+		<menu name="User" action="user" key="admin.user" function="CustomerUserAdmin">
+			<!-- <menu action="user" method="add" key="admin.user.add"></menu>
+			<menu action="user" method="edit" key="admin.user.edit"></menu> -->
+			<menu action="user" method="visitStbPower" key="user.visit.stb"></menu>
+			<menu action="user-role" method="update" key="user.role.edit"></menu>
+		</menu>
+		<menu name="Role" action="role" key="admin.role" function="CustomerUserAdmin">
+			<menu action="role" method="function" key="admin.role.function"></menu>
+			<!-- <menu action="role" method="add" key="admin.role.add"></menu>
+			<menu action="role" method="edit" key="admin.role.edit"></menu>
+			<menu action="role" method="showauth" key="role.auth.edit"></menu> -->
+		</menu>
+		<!-- <menu name="Role" action="user-role" key="admin.user-role" function="CustomerUserAdmin">
+			<menu action="user-role" method="update" key="admin.user-role.edit"></menu>
+		</menu> -->
+	</menu>
+													
+	<menu name="server.log" action="stb-operation-log" function="ServerLogView">
+		<menu name="stb.operation.log" action="stb-operation-log"></menu>
+		<menu name="login.log" action="login-log"></menu>
+		<menu name="user.operation.log"  action="user-operation-log"></menu>
+		<menu name="down.load.log" action="config-down-load-log"></menu>
+		<menu name="stb.login.log" action="stb-login-record"></menu>
+		<menu name="authenticate.log" action="authenticate-record"></menu>
+		<menu name="watcher.report.log" action="watcher-report-record"></menu>
+		<menu name="web.control.log" action="web-control-record"></menu>
+	</menu>
+	
+	<!-- <menu name="stb.software.package.manage" action="packages" function="UpdateManage">
+		<menu name="stb.software.list" action="packages">
+			<menu  name="stb.software.edit" action="box-package" method="edit"></menu>
+			<menu name="add.module.file" action="box-package" method="add"></menu>
+			<menu name="add.module.file" action="box-package" method="see"></menu>
+		</menu>
+		<menu name="create.stb.software" action="packages" method="create"></menu>
+		<menu name="module.file.list" action="module-file"></menu>
+		<menu name="module.file.publish" action="module-file" method="add"></menu>
+	</menu> -->
+	
+	<menu name="report.list" action="report-list" function="DeviceReport" method="groupDownStatus">
+		<!-- <menu name="stand.alone.play.list" action="report-list" method="standAlone"></menu> -->
+		<menu name="top.levle.download.status.report" action="report-list" method="groupDownStatus"></menu>
+		<menu name="second.level.download.status.report" action="report-list" method="groupDownStatus2"></menu>
+		<menu name="stb.download.status.report" action="report-list" method="stbDownStat"></menu>
+		<menu name="stb.play.history.report" action="report-list" method="playHistoryReport"></menu>
+		<!--<menu name="stand.alone.play.list" action="stb" method="standAlone"></menu>-->
+		<!--<menu name="stb.play.status.report" action="stb" method="standAlone"></menu>-->
+		<menu name="video.paly.times.report" action="report-list" method="playTimesReport"></menu>
+		<!--<menu name="group.play.list" action="report-list" method="groupPlayList"></menu>-->
+		<menu name="stb.status.report" action="stb" method="statusReport"></menu>
+	</menu>
+	
+	<menu name="Personal" action="personal" exclude="CustomerDeviceView">
+		<menu name="personal.mnu.info" action="personal"></menu>
+		<menu name="personal.mnu.password" action="personal" method="password"></menu>
+	</menu>
+	<menu name="WarningInfo" action="warning-info">
+		<menu name="warning-info.list" action="warning-info">
+			<menu name="warning-info.list" action="warning-info" method="byMac"></menu>
+			<menu name="warning-info.list" action="warning-info" method="byType"></menu>
+			<menu name="warning-info.list" action="warning-info" method="query"></menu>
+		</menu>
+	</menu>
+<!--	<menu name="site.customer" function="SiteCustomerAdmin">-->
+<!--		<menu name="site.customer.add" action="customer" method="fadd" ></menu>-->
+<!--		<menu name="site.customer.list" action="customer" method="list" ></menu>-->
+<!--	</menu>-->
+</menus>
+		
+		
+	

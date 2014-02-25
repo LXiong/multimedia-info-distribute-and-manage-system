@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.yun-ling.media</groupId>
+		<artifactId>policy-man-parent</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>policy-man-console</artifactId>
+	<name>policy-man-console ${version}</name>
+	<version>${global.version}</version>
+	<packaging>jar</packaging>
+	<description>[[<![CDATA[
+	This module is commons console classes.
+	]]>
+	</description>
+
+	<dependencies>
+	</dependencies>
+</project>

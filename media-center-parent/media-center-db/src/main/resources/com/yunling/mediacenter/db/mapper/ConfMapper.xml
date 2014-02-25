@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.ConfMapper">
+	<select id="getConfs" resultType="Conf">
+		select * from (
+			select 
+				conf_id as confId,
+				conf_name as confName,
+				conf_version as confVersion,
+				create_time as createTime,
+				update_time as updateTime,
+				ROWNUM AS R
+			from CONF
+		)
+		where confId != -1
+		<if test="begin != 0 and end != 0">
+			and R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="getConf" resultType="Conf">
+		select conf_id as confId
+		from CONF
+		where conf_name = #{confName }
+	</select>
+	<insert id="addConf" parameterType="Conf">
+		<selectKey keyProperty="confId" order="BEFORE" resultType="java.lang.Long">
+			select CONF_SEQ.nextval from dual
+		</selectKey>
+		insert into CONF(conf_id, conf_name, conf_version, create_time, update_time)
+		values(#{confId }, #{confName }, #{confVersion }, #{createTime }, #{updateTime })
+	</insert>
+	<update id="upateConf"  parameterType="Conf">
+		update CONF set conf_name = #{confName},
+			update_time = #{updateTime }
+		where conf_id = #{confId}
+	</update>
+	<delete id="deleteConf"  parameterType="Conf">
+		delete from CONF 
+		where conf_id=#{confId}
+	</delete>
+	
+	<select id="countAll" resultType="int">
+		SELECT COUNT(*) as total FROM conf
+		where conf_id != -1
+	</select>
+	<select id="list" resultType="Conf">
+	SELECT * FROM
+		(SELECT A.*,ROWNUM AS RN FROM
+			(SELECT conf_id as confId,
+				conf_name as confName,
+				conf_version as confVersion,
+				create_time as createTime,
+				update_time as updateTime FROM conf
+				where conf_id != -1) A 
+		WHERE ROWNUM &lt;=#{end})
+	WHERE RN&gt;=#{begin}
+	
+	</select>
+</mapper>

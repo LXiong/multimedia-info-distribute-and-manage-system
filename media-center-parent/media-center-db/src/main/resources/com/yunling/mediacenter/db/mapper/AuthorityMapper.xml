@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.AuthorityMapper">
+	
+	<select id="list" resultType="Authority">
+		SELECT id, name, locale_zh_cn as localeZhCn
+		FROM mc_authority
+	</select>
+	
+	<select id="listByRole" resultType="Authority">
+		SELECT au.id, au.name, au.locale_zh_cn as localeZhCn
+		FROM mc_authority au JOIN mc_role_auth ra on au.id=ra.auth_id
+		WHERE ra.role_id=#{roleId}
+		ORDER BY au.id
+	</select>
+	<select id="listGrantedByRole" resultType="Authority">
+		SELECT au.id, au.name, au.locale_zh_cn as localeZhCn,
+			nvl2(ra.role_id,'1','0') as granted
+		FROM mc_authority au LEFT JOIN mc_role_auth ra on au.id=ra.auth_id
+			AND ra.role_id=#{roleId}
+		ORDER BY au.id
+	</select>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="uploading_videos" modelName="UploadingVideo"
+paged="true"
+xmlns="http://www.dwangel.com/dbschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd"
+>
+	<key name="id" type="number" generator="native"></key>
+	<column name="code" type="varchar" length="64" />
+	<column name="file_name" type="nvarchar" length="100" />
+	<column name="origin_name" type="nvarchar" length="100" />
+	<column name="current_size" type="number" />
+	<column name="expected_size" type="number" />
+	<column name="last_modified_time" type="datetime" />
+	<column name="uploaded" type="boolean" length="1" />
+</schema>

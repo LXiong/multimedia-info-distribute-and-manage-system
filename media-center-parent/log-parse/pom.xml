@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.yunling.media.center</groupId>
+		<artifactId>console-pom</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../console-pom/pom.xml</relativePath>
+	</parent>
+	<artifactId>log-parse</artifactId>
+	<version>${global.version}</version>
+	<packaging>jar</packaging>
+	<description>[[<![CDATA[
+	This module is a program to parse stb log file
+	]]>
+	</description>
+	<name>log-parse</name>
+
+	<dependencies>
+	
+		<!-- [begin] Module dependency -->
+		<dependency>
+			<groupId>com.yunling.media.center</groupId>
+			<artifactId>commons-console</artifactId>
+			<version>${global.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.yunling.media.center</groupId>
+			<artifactId>media-center-db</artifactId>
+			<version>${global.version}</version>
+		</dependency>
+		<!-- [end] Module dependency -->
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>7.1.6.v20100715</version>
+		</dependency>
+		
+	</dependencies>
+</project>

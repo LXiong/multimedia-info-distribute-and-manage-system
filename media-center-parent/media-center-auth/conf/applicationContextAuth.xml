@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--Application context definition for PetClinic on Hibernate.-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<bean id="propertyConfiguror"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>conf/jdbc.properties</value>
+				<value>conf/config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="authServer" class="com.yunling.mediacenter.server.AuthServer">
+		<property name="bootstrap">
+			<ref bean="bootstrap"></ref>
+		</property>
+		<property name="jettyServer">
+			<ref bean="jettyServer"></ref>
+		</property>
+		<property name="watcherReportRecordService">
+			<ref bean="watcherReportRecordService"/>
+		</property>
+		<property name="statistics">
+			<ref bean="statistics"></ref>
+		</property>
+		<property name="authPort">
+			<value>${auth.port}
+			</value>
+		</property>
+		<property name="customerId" value="${license.customer}"/>
+		<property name="clientNumber" value="${license.client.number}"/>
+		<property name="license" value="${license.token}"/>
+	</bean>
+	<bean id="bootstrap" class="org.jboss.netty.bootstrap.ServerBootstrap">
+		<constructor-arg type="org.jboss.netty.channel.ChannelFactory">
+			<ref bean="channelFactory" />
+		</constructor-arg>
+		<property name="pipelineFactory">
+			<ref bean="pipelineFactory"></ref>
+		</property>
+	</bean>
+	<bean id="channelFactory"
+		class="org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory">
+		<constructor-arg index="0">
+			<ref bean="executorService"></ref>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<ref bean="executorService"></ref>
+		</constructor-arg>
+	</bean>
+	<bean id="executorService" class="java.util.concurrent.Executors"
+		factory-method="newCachedThreadPool"></bean>
+	<bean id="pipelineFactory" class="com.yunling.mediacenter.server.AuthPipelineFactory">
+		<property name="authenticateHandler">
+			<ref bean="authenticateHandler" />
+		</property>
+	</bean>
+	<bean id="authenticateHandler" class="com.yunling.mediacenter.server.AuthenticateHandler">
+		<lookup-method name="getAuthenticater" bean="authenticater"/>
+	</bean>
+	<bean id="authenticater"
+		class="com.yunling.mediacenter.server.actions.CommonAuthenticater" scope="prototype">
+		<property name="stbService">
+			<ref bean="stbService" />
+		</property>
+		<property name="authenticateRecordService">
+			<ref bean="authenticateRecordService" />
+		</property>
+		<property name="encryptKey">
+			<value>${auth.md5EncryptKey}</value>
+		</property>
+		<property name="statistics">
+			<ref bean="statistics"></ref>
+		</property>
+	</bean>
+	<bean id="watchIP" class="java.net.InetAddress" factory-method="getLocalHost">
+	</bean>
+
+
+	<bean id="statistics" class="com.yunling.mediacenter.utils.Statistics">
+		<property name="stbService">
+			<ref bean="stbService"></ref>
+		</property>
+		<property name="stbLoginRecordService">
+			<ref bean="stbLoginRecordService"></ref>
+		</property>
+	</bean>
+
+
+
+	<!-- export hessian interface -->
+
+	<bean name="/faceToAuth"
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service">
+			<ref bean="authService" />
+		</property>
+		<property name="serviceInterface">
+			<value>
+				com.yunling.mediacenter.server.remote.AuthenticateQuery
+			</value>
+		</property>
+	</bean>
+	<bean id="authService"
+		class="com.yunling.mediacenter.server.remote.impl.AuthenticateQueryImpl">
+		<constructor-arg index="0">
+			<ref bean="statistics"></ref>
+		</constructor-arg>
+	</bean>
+	<bean name="/faceToWatch"
+		class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service">
+			<ref bean="watchService" />
+		</property>
+		<property name="serviceInterface">
+			<value>
+				com.yunling.mediacenter.server.remote.WatcherReport
+			</value>
+		</property>
+	</bean>
+	<bean id="watchService"
+		class="com.yunling.mediacenter.server.remote.impl.WatcherReportImpl">
+		<constructor-arg index="0">
+			<ref bean="statistics"></ref>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<ref bean="watcherReportRecordService"></ref>
+		</constructor-arg>
+	</bean>
+
+	<!-- jetty server and ...... -->
+	<bean id="jettyServer" class="org.eclipse.jetty.server.Server">
+		<!-- web, hessian`s port -->
+		<constructor-arg index="0" value="${auth.faceToWatchPort}" type="int">
+		</constructor-arg>
+	</bean>
+</beans>

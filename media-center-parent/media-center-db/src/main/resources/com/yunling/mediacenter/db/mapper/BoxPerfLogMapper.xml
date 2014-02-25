@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.yunling.mediacenter.db.mapper.BoxPerfLogMapper">
+	    <insert id="add" parameterType="BoxPerfLog">
+			<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
+				select seq_perflog.nextval from dual
+			</selectKey>
+			insert into boxperflog (ID, MAC, LOGTIME, MEMUSED, DISKUSED, CPUUSED)
+			values(#{id},#{mac},#{logTime},#{memUsed},#{diskUsed},#{cpuUsed}) 
+		</insert>
+		
+		<select id="list"  resultType="BoxPerfLog" parameterType="map" >
+			select * from (select rownum r,u.* from boxperflog u) where r between #{begin} and #{end} 
+		</select>
+		<select id="selectPerfCount" resultType="java.lang.Integer">
+			select count(*) from boxperflog
+		</select>
+    </mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="layout" modelName="Layout" paged="true"
+xmlns="http://www.dwangel.com/dbschema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.dwangel.com/dbschema dbschema.xsd">
+	<key name="id" type="number" generator="native"></key>
+	<column name="name" type="varchar" length="100" />
+	<column name="use_percent" type="boolean" length="1"/>
+	<column name="width" type="number" />
+	<column name="height" type="number" />
+	<column name="lcomment" type="varchar" length="200" />
+	
+	<result-map name="withArea" alias="layout">
+		<collection  alias="area" schemaName="area" property="areas"/>		
+	</result-map>
+</schema>

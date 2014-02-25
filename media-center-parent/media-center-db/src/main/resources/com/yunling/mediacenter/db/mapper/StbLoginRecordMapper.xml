@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.StbLoginRecordMapper">
+	<insert id="insertRecord">
+		insert into WATCH_LOG
+		(ID, TYPE, STB_MAC, STB_IP,
+		STB_PORT, STATUS, WATCH_IP, WATCH_PORT,
+		CREATED_AT)
+		values
+		(WATCH_LOG_ID.nextVal, #{type}, #{mac}, #{stbIp}, #{stbPort},
+		#{status},
+		#{watchIp}, #{watchPort}, sysdate)
+	</insert>
+	<select id="lastLoginSuccessOn" resultType="StbLoginRecord">
+		SELECT log.stb_ip as stbIp,
+		log.stb_mac as mac,
+		log.stb_port as stbPort,
+		log.status as status,
+		log.watch_ip as watchIp,
+		log.watch_port as watchPort,
+		log.created_at as createdAt 
+		FROM watch_log log join 
+			(SELECT stb_mac, max(created_at) AS last_access FROM watch_log GROUP BY stb_mac) temp
+		ON log.stb_mac = temp.stb_mac 
+		AND log.created_at = temp.last_access 
+		AND log.type = 'login' 
+		AND log.status = 'SUCCESS'
+		AND log.watch_ip = #{watchIp}
+	</select>
+
+	<select id="getLogs" parameterType="map" resultType="StbLoginRecord">
+		select * from (
+		select STB_IP as stbIp,
+		STB_MAC as mac,
+		STB_PORT as stbPort,
+		STATUS as status,
+		WATCH_IP as watchIp,
+		WATCH_PORT as watchPort,
+		CREATED_AT as createdAt,
+		row_number() over(order by CREATED_AT desc) as R
+		from WATCH_LOG
+		where 1=1
+		<if test="stbLoginRecord.mac != '' and stbLoginRecord.mac != null">
+			AND STB_MAC like #{stbLoginRecord.mac} 
+			</if>
+		<if test="stbLoginRecord.status != '' and stbLoginRecord.status != null">
+			AND STATUS = #{stbLoginRecord.status } 
+			</if>
+		<if test="from != null and from != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+			</if>
+		<if test="to != null and to != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+			</if>
+		)
+		<if test="begin &gt;= 0 and end &gt; 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="count" resultType="Count">
+		select count(*) as counts
+		from WATCH_LOG
+		where 1 = 1
+		<if test="stbLoginRecord.mac != null and stbLoginRecord.mac != ''">
+			AND STB_MAC like #{stbLoginRecord.mac} 
+		</if>
+		<if test="stbLoginRecord.status != null and stbLoginRecord.status != ''">
+			AND STATUS = #{stbLoginRecord.status } 
+		</if>
+		<if test="from != null and from != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+		</if>
+		<if test="to != null and to != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+		</if>
+	</select>
+	<select id="getResults" resultType="String">
+		select distinct STATUS
+		from
+		WATCH_LOG
+	</select>
+</mapper>

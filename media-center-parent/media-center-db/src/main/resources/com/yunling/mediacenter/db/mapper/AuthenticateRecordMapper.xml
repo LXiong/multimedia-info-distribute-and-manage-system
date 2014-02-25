@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.AuthenticateRecordMapper">
+	<insert id="insert">
+		insert into AUTHENTICATE_RECORDS
+		(ID, STB_IP, CUSTOMER_NAME, STB_MAC, AUTH_STATUS, WATCH_SERVER_IP, WATCH_SERVER_PORT,
+		CREATED_AT)
+		values (AUTH_RECORD_ID.nextVal, #{stbIp}, #{customerName}, #{stbMac}, #{authStatus},
+		#{watchServerIp}, #{watchServerPort}, sysdate)
+	</insert>
+	<select id="getLogs" parameterType="map" resultType="AuthenticateRecord">
+		select * from (
+		select a.*, rownum as rn from (
+			select STB_IP as stbIp, 
+				STB_MAC as stbMac,
+				AUTH_STATUS as authStatus,
+				CUSTOMER_NAME as customerName,
+				WATCH_SERVER_IP as watchServerIp,
+				WATCH_SERVER_PORT as watchServerPort,
+				CREATED_AT as createdAt
+			from AUTHENTICATE_RECORDS
+			<where>
+			<if test="authenticateRecord.stbMac != null and authenticateRecord.stbMac != ''">
+				AND STB_MAC like #{authenticateRecord.stbMac} 
+			</if>
+			<if test="authenticateRecord.authStatus != null and authenticateRecord.authStatus != ''">
+				AND AUTH_STATUS = #{authenticateRecord.authStatus } 
+			</if>
+			<if test="from != null and from != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+			</if>
+			<if test="to != null and to != ''">
+				AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+			</if>
+			</where>
+			order by CREATED_AT desc
+		) a
+		<if test="end &gt; 0">
+		where rownum &lt;= #{end}
+		</if>
+		) b
+		<if test="begin &gt;= 0">
+		where rn &gt;= #{begin} 
+		</if>
+	</select>
+	<select id="count" resultType="int">
+		select count(*) as counts
+		from AUTHENTICATE_RECORDS
+		<where>
+		<if test="authenticateRecord.stbMac != null and authenticateRecord.stbMac != ''">
+			AND STB_MAC like #{authenticateRecord.stbMac} 
+		</if>
+		<if test="authenticateRecord.authStatus != null and authenticateRecord.authStatus != ''">
+			AND AUTH_STATUS = #{authenticateRecord.authStatus } 
+		</if>
+		<if test="from != null and from != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &gt;= #{from}
+		</if>
+		<if test="to != null and to != ''">
+			AND to_char(CREATED_AT, 'yyyy-MM-dd') &lt;= #{to}
+		</if>
+		</where>
+	</select>
+	<select id="getResults" resultType="String">
+		select distinct AUTH_STATUS
+		from AUTHENTICATE_RECORDS
+	</select>
+</mapper>

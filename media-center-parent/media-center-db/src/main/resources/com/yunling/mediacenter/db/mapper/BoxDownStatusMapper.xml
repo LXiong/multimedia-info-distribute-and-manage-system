@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunling.mediacenter.db.mapper.BoxDownStatusMapper">
+	<update id="mergeStatus" parameterType="BoxDownStatus">
+		MERGE INTO BOXDOWNSTATUS
+		USING (SELECT count(*) as co FROM BOXDOWNSTATUS 
+			WHERE MAC = #{mac} 
+			and POLICYNUMBER = #{policyNumber}
+			and VIDEONAME = #{videoName} ) t
+		ON (t.co &lt;&gt; 0)
+		WHEN NOT MATCHED THEN
+			INSERT
+				(MAC, POLICYNUMBER, VIDEONAME, STARTTIME, ENDTIME, ISFINISHED) 
+			VALUES(#{mac}, #{policyNumber, jdbcType=VARCHAR}, #{videoName}, 
+			#{startTime, jdbcType=TIMESTAMP}, #{endTime, jdbcType=TIMESTAMP}, 
+			#{isFinished})
+		WHEN MATCHED THEN
+			UPDATE SET
+			<if test="doneSize != null">
+					DONESIZE = #{doneSize}, 
+				</if>
+				<if test="totalSize != null">
+					TOTALSIZE = #{totalSize}, 
+				</if>
+				ENDTIME = #{endTime, jdbcType=TIMESTAMP},
+				ISFINISHED = #{isFinished} 
+			WHERE MAC = #{mac} 
+				and POLICYNUMBER = #{policyNumber}
+				and VIDEONAME = #{videoName}
+	</update>
+	<insert id="insert" parameterType="BoxDownStatus">
+		insert into BOXDOWNSTATUS(MAC, POLICYNUMBER, VIDEONAME, STARTTIME, ISFINISHED) 
+		VALUES(#{mac}, #{policyNumber, jdbcType=VARCHAR}, #{videoName}, 
+			#{startTime, jdbcType=TIMESTAMP}, #{isFinished})
+	</insert>
+	<update id="update" parameterType="BoxDownStatus">
+		update BOXDOWNSTATUS 
+		set <if test="doneSize != null">
+				DONESIZE = #{doneSize}, 
+			</if>
+			<if test="totalSize != null">
+				TOTALSIZE = #{totalSize}, 
+			</if>
+			ENDTIME = #{endTime, jdbcType=TIMESTAMP},
+			ISFINISHED = #{isFinished} 
+		where MAC = #{mac} 
+			and POLICYNUMBER = #{policyNumber}
+			and VIDEONAME = #{videoName}
+	</update>
+	<select id="getMacs" parameterType="BoxDownStatus" resultType="BoxDownStatus" >
+		select distinct box.MAC as mac,
+			box.POLICYNUMBER as policyNumber, 
+			<!-- box.VIDEONAME as videoName, 
+			box.DONESIZE as doneSize, 
+			box.TOTALSIZE as totalSize, 
+			box.STARTTIME as startTime, 
+			box.ENDTIME as endTime, 
+			box.ISFINISHED as isFinished,  -->
+			STB.TYPEID as typeId, 
+			GP.TYPE_NAME as typeName,
+			STB.group_id as groupId,
+			GROUPS.group_name as groupName,
+			STB.SHOPNO as shopNo,
+			STB.SHOPNAME as shopName
+		from BOXDOWNSTATUS box
+			join STB on STB.stb_mac = box.MAC
+			left join GROUPS on GROUPS.group_id = STB.group_id
+			left join GROUPTYPE GP on GP.TYPE_ID = STB.TYPEID
+		where box.POLICYNUMBER = #{policyNumber} 
+		<if test="isFinished != null and isFinished != ''">
+			and box.ISFINISHED = 'N'
+		</if>
+	</select>
+	<select id="getList" parameterType="BoxDownStatus" resultType="BoxDownStatus" >
+		select * from BOXDOWNSTATUS
+		where POLICYNUMBER = #{policyNumber} 
+			<if test="isFinished != null and isFinished != ''">
+				and ISFINISHED = 'N'
+			</if>
+			<if test="mac != null and mac != ''">
+				and MAC = #{mac} 
+			</if>
+			<if test="videoName != null and videoName != ''">
+				and VIDEONAME = #{videoName}
+			</if>
+	</select>
+	<select id="getFinishedNum" parameterType="BoxDownStatus" resultType="java.lang.Long" >
+		select count(*) from BOXDOWNSTATUS 
+		where POLICYNUMBER = #{policyNumber} 
+			and MAC = #{mac} 
+			and ISFINISHED = 'Y'
+	</select>
+	<select id="getDownStatus" parameterType="BoxDownStatus" resultType="BoxDownStatus">
+		select * from BOXDOWNSTATUS
+		where POLICYNUMBER = #{policyNumber} 
+			and VIDEONAME = #{videoName}
+			and MAC = #{mac} 
+	</select>
+	<!-- add by L.J. on 6/14/2011 -->
+	<select id="countBy" parameterType="map" resultType="int">
+		select count(*) from
+			(select policynumber, sum(case when notfinished is null then 1 end) as finishedstb, 
+	  			sum(case when notfinished > 0 then 1 end) as notfinishedstb from
+	    	(select temp.policynumber, temp.mac, temp.finished, temp.notfinished, stb.typeid, stb.group_id from
+	      	(select policynumber, mac, sum(case when isfinished='Y' then 1 end) as finished, 
+	        	sum(case when isFinished='N' then 1 end) as notfinished
+	      	from BOXDOWNSTATUS 
+				group by policynumber, mac
+	      	) temp
+	    	join stb on temp.mac = stb.stb_mac) 
+	      	where 1=1
+	      		<if test="policyNumber != null and policyNumber != ''">
+					and policynumber like #{policyNumber} 
+				</if>
+				<if test="typeId != null and typeId != 0">
+					and typeid = #{typeId} 
+				</if>
+				<!--<if test="groupId != null and groupId != 0">
+					and group_id = #{groupId} 
+				</if>-->
+	    	group by policynumber
+    	)
+	</select>
+	<select id="getReport" parameterType="map" resultType="GroupDownStatusReport">
+		select * from (select tep.*, ROWNUM AS R from
+			(select policynumber, sum(case when notfinished is null then 1 end) as finishedstb, 
+	  			sum(case when notfinished > 0 then 1 end) as notfinishedstb from
+	    		(select temp.policynumber, temp.mac, temp.finished, 
+	    			temp.notfinished, stb.typeid, stb.group_id 
+	    		from (select policynumber, mac, sum(case when isfinished='Y' then 1 end) as finished, 
+	        			sum(case when isFinished='N' then 1 end) as notfinished
+	      			from BOXDOWNSTATUS 
+					group by policynumber, mac
+	      			) temp
+	    		join stb on temp.mac = stb.stb_mac) 
+		      	where 1=1
+		      		<if test="policyNumber != null and policyNumber != ''">
+						and policynumber like #{policyNumber} 
+					</if>
+					<if test="typeId != null and typeId != 0">
+						and typeid = #{typeId} 
+					</if>
+					<!--<if test="groupId != null and groupId != 0">
+						and group_id = #{groupId} 
+					</if>-->
+		    	group by policynumber
+		    	order by policynumber desc
+    		) tep)
+		<if test="begin != 0 and end != 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<select id="countBy2" parameterType="map" resultType="int">
+		select count(*) from
+			(
+			select policynumber, group_id, groupname, 
+				sum(case when notfinished is null then 1 end) as finishedstb, 
+	  			sum(case when notfinished > 0 then 1 end) as notfinishedstb 
+	  		from
+	    		(
+	    		select temp.policynumber, temp.mac, temp.finished, 
+	    			temp.notfinished, stb.typeid, stb.group_id, 
+		    		groups.group_name as groupname
+	    		from
+	      			(
+	      			select policynumber, mac, 
+	      				sum(case when isfinished='Y' then 1 end) as finished, 
+	        			sum(case when isFinished='N' then 1 end) as notfinished
+	      			from BOXDOWNSTATUS 
+					group by policynumber, mac
+	      			) temp
+	    			join stb on temp.mac = stb.stb_mac
+		    		left join GROUPS on groups.group_id = stb.group_id
+	    		) 
+	      		where 1=1
+	      		<if test="policyNumber != null and policyNumber != ''">
+					and policynumber like #{policyNumber} 
+				</if>
+				<if test="typeId != null and typeId != 0">
+					and typeid = #{typeId} 
+				</if>
+	    		group by policynumber, group_id, groupname
+    		)
+	</select>
+	<select id="getReport2" parameterType="map" resultType="GroupDownStatusReport">
+		select * from (
+			select tep.policynumber, groupname, tep.finishedstb,
+				tep.notfinishedstb, ROWNUM AS R 
+			from
+				(select policynumber, group_id, groupname, 
+					sum(case when notfinished is null then 1 end) as finishedstb, 
+		  			sum(case when notfinished > 0 then 1 end) as notfinishedstb 
+		  		from
+		    		(select temp.policynumber, temp.mac, temp.finished, 
+		    			temp.notfinished, stb.typeid, stb.group_id, 
+		    			groups.group_name as groupname
+		    		from
+		      			(select policynumber, mac, 
+		      				sum(case when isfinished='Y' then 1 end) as finished, 
+		        			sum(case when isFinished='N' then 1 end) as notfinished
+		      			from BOXDOWNSTATUS 
+						group by policynumber, mac
+		      			) temp
+		    			join stb on temp.mac = stb.stb_mac
+		    			left join GROUPS on groups.group_id = stb.group_id
+		    		) 
+		      	where 1=1
+		      		<if test="policyNumber != null and policyNumber != ''">
+						and policynumber like #{policyNumber} 
+					</if>
+					<if test="typeId != null and typeId != 0">
+						and typeid = #{typeId} 
+					</if>
+		    	group by policynumber, group_id, groupname
+		    	order by policynumber desc, groupname
+	    	) tep)
+		<if test="begin != 0 and end != 0">
+			where R between #{begin} and #{end}
+		</if>
+	</select>
+	<!-- add by L.J. on 6/15/2011 -->
+	<select id="countForDownStat" parameterType="map" resultType="int">
+		select count(*) 
+        from
+	        (select policynumber, mac, starttime, 
+	            (case when notfinished is null then endtime
+	              when notfinished > 0 then null end) as endtime, 
+	            (case when notfinished is null then 'finished'
+	              when notfinished > 0 then 'notfinished' end) as status
+	        from
+	            (select policynumber, mac, min(starttime) as starttime, max(endtime) as endtime, 
+	                sum(case when isFinished='N' then 1 end) as notfinished
+	            from BOXDOWNSTATUS 
+	            group by policynumber, mac
+	            )
+	        ) t
+	        join stb on stb.stb_mac = t.mac
+	    where 1=1 
+	        <if test="policyNumber != null and policyNumber != ''">
+				and policynumber like #{policyNumber} 
+			</if>
+			<if test="typeId != null and typeId != '' and typeId != 0L">
+				and stb.typeid = #{typeId} 
+			</if>
+			<if test="groupId != null and groupId != '' and groupId != 0L">
+				and stb.group_id = #{groupId} 
+			</if>
+	</select>
+	<select id="stbDownStat" parameterType="map" resultType="StbDownStatusReport">
+	select * from
+	    (select t.policynumber, t.mac, t.starttime, t.endtime, t.status, 
+	    	stb.group_id, ROWNUM AS R 
+	    from
+	        (select policynumber, mac, starttime, 
+	            (case when notfinished is null then endtime
+	              when notfinished > 0 then null end) as endtime, 
+	            (case when notfinished is null then 'finished'
+	              when notfinished > 0 then 'notfinished' end) as status
+	        from
+	            (select policynumber, mac, min(starttime) as starttime, max(endtime) as endtime, 
+	                sum(case when isFinished='N' then 1 end) as notfinished
+	            from BOXDOWNSTATUS 
+	            group by policynumber, mac
+	            )
+	        ) t
+	        join stb on stb.stb_mac = t.mac
+	    where 1=1 
+	        <if test="policyNumber != null and policyNumber != ''">
+				and t.policynumber like #{policyNumber} 
+			</if>
+			<if test="typeId != null and typeId != '' and typeId != 0L">
+				and stb.typeid = #{typeId} 
+			</if>
+			<if test="groupId != null and groupId != '' and groupId != 0L">
+				and stb.group_id = #{groupId} 
+			</if>
+	    order by policynumber desc
+	    )
+	<if test="begin != 0 and end != 0">
+		where R between #{begin} and #{end}
+	</if>
+	</select>
+	<select id="allDownStatus" parameterType="map" resultType="GroupDownStatusReport">
+		select * from 
+			(select policynumber, sum(case when notfinished is null then 1 end) as finishedstb, 
+	  			sum(case when notfinished > 0 then 1 end) as notfinishedstb from
+	    	(select temp.policynumber, temp.mac, temp.finished, temp.notfinished, stb.typeid, stb.group_id from
+	      	(select policynumber, mac, sum(case when isfinished='Y' then 1 end) as finished, 
+	        	sum(case when isFinished='N' then 1 end) as notfinished
+	      	from BOXDOWNSTATUS 
+				group by policynumber, mac
+	      	) temp
+	    	join stb on temp.mac = stb.stb_mac) 
+	      	where 1=1
+	      		<if test="policyNumber != null and policyNumber != ''">
+					and policynumber like #{policyNumber} 
+				</if>
+				<if test="typeId != null and typeId != 0">
+					and typeid = #{typeId} 
+				</if>
+	    	group by policynumber
+	    	order by policynumber desc
+    	)
+	</select>
+	<select id="allDownStatus2" parameterType="map" resultType="GroupDownStatusReport">
+    	select * from 
+				(select policynumber, group_id, groupname, 
+					sum(case when notfinished is null then 1 end) as finishedstb, 
+		  			sum(case when notfinished > 0 then 1 end) as notfinishedstb 
+		  		from
+		    		(select temp.policynumber, temp.mac, temp.finished, 
+		    			temp.notfinished, stb.typeid, stb.group_id, 
+		    			groups.group_name as groupname
+		    		from
+		      			(select policynumber, mac, 
+		      				sum(case when isfinished='Y' then 1 end) as finished, 
+		        			sum(case when isFinished='N' then 1 end) as notfinished
+		      			from BOXDOWNSTATUS 
+						group by policynumber, mac
+		      			) temp
+		    			join stb on temp.mac = stb.stb_mac
+		    			left join GROUPS on groups.group_id = stb.group_id
+		    		) 
+		      	where 1=1
+		      		<if test="policyNumber != null and policyNumber != ''">
+						and policynumber like #{policyNumber} 
+					</if>
+					<if test="typeId != null and typeId != 0">
+						and typeid = #{typeId} 
+					</if>
+					<!--<if test="groupId != null and groupId != 0">
+					and group_id = #{groupId} 
+				</if>-->
+		    	group by policynumber, group_id, groupname
+	    	)
+		    order by policynumber desc, groupname
+	</select>
+	<select id="stbAllDownStat" parameterType="map" resultType="StbDownStatusReport">
+		select t.policynumber, t.mac, t.starttime, t.endtime, t.status, 
+	    	stb.group_id
+	    from
+	        (select policynumber, mac, starttime, 
+	            (case when notfinished is null then endtime
+	              when notfinished > 0 then null end) as endtime, 
+	            (case when notfinished is null then 'finished'
+	              when notfinished > 0 then 'notfinished' end) as status
+	        from
+	            (select policynumber, mac, min(starttime) as starttime, max(endtime) as endtime, 
+	                sum(case when isFinished='N' then 1 end) as notfinished
+	            from BOXDOWNSTATUS 
+	            group by policynumber, mac
+	            )
+	        ) t
+	        join stb on stb.stb_mac = t.mac
+	    where 1=1 
+	        <if test="policyNumber != null and policyNumber != ''">
+				and t.policynumber like #{policyNumber} 
+			</if>
+			<if test="typeId != null and typeId != '' and typeId != 0L">
+				and stb.typeid = #{typeId} 
+			</if>
+			<if test="groupId != null and groupId != '' and groupId != 0L">
+				and stb.group_id = #{groupId} 
+			</if>
+	    order by policynumber desc
+	</select>
+</mapper>

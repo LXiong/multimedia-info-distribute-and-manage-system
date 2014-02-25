@@ -1,0 +1,12 @@
+auth.port=8888
+auth.md5EncryptKey=YUNLING
+auth.faceToWatchPort=6666
+
+#database version checking
+db.version=201109191558
+db.version.check=true
+db.version.table=db_mc_version
+
+license.customer=kfc
+license.client.number=1000
+license.token=22E2252A173389688D07E0B917F0A822
